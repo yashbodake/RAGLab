@@ -77,18 +77,17 @@ function toggleExpand() {
 <style scoped>
 .chunk-card {
   padding: var(--spacing-md);
-  background-color: rgba(255, 255, 255, 0.01);
+  background-color: var(--bg-panel);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(7, 54, 66, 0.18);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
+  transition: border-color var(--transition-fast);
 }
 
 .chunk-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-active);
+  border-color: var(--accent-secondary);
 }
 
 .card-header {
@@ -98,14 +97,15 @@ function toggleExpand() {
 }
 
 .rank-badge {
-  background-color: rgba(0, 240, 255, 0.1);
+  background-color: rgba(7, 54, 66, 0.08);
   color: var(--accent-primary);
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(7, 54, 66, 0.2);
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .chunk-id {
@@ -161,26 +161,27 @@ function toggleExpand() {
 }
 
 .meta-badge.source {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(7, 54, 66, 0.06);
   color: var(--text-muted);
+  border: 1px solid rgba(7, 54, 66, 0.15);
 }
 
 .meta-badge.product {
-  background-color: rgba(0, 255, 136, 0.05);
+  background-color: rgba(42, 161, 152, 0.08);
   color: var(--accent-success);
-  border: 1px solid rgba(0, 255, 136, 0.15);
+  border: 1px solid rgba(42, 161, 152, 0.25);
 }
 
 .meta-badge.error-code {
-  background-color: rgba(255, 0, 127, 0.05);
-  color: var(--accent-secondary);
-  border: 1px solid rgba(255, 0, 127, 0.15);
+  background-color: rgba(220, 50, 47, 0.08);
+  color: var(--accent-error);
+  border: 1px solid rgba(220, 50, 47, 0.25);
 }
 
 .meta-badge.index {
-  background-color: rgba(255, 184, 0, 0.05);
+  background-color: rgba(181, 137, 0, 0.08);
   color: var(--accent-warning);
-  border: 1px solid rgba(255, 184, 0, 0.15);
+  border: 1px solid rgba(181, 137, 0, 0.25);
 }
 
 .scores-container {
@@ -188,7 +189,7 @@ function toggleExpand() {
   flex-direction: column;
   gap: var(--spacing-xs);
   margin-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(7, 54, 66, 0.1);
   padding-top: var(--spacing-sm);
 }
 
@@ -208,30 +209,26 @@ function toggleExpand() {
 .bar-outer {
   flex-grow: 1;
   height: 6px;
-  background-color: var(--bg-secondary);
+  background-color: rgba(7, 54, 66, 0.1);
   border-radius: var(--radius-full);
   overflow: hidden;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(7, 54, 66, 0.12);
 }
 
 .bar-inner {
   height: 100%;
-  border-radius: var(--radius-full);
 }
 
 .bar-inner.dense {
   background-color: var(--accent-primary);
-  box-shadow: 0 0 4px var(--accent-primary);
 }
 
 .bar-inner.bm25 {
   background-color: var(--accent-warning);
-  box-shadow: 0 0 4px var(--accent-warning);
 }
 
 .bar-inner.fused {
   background-color: var(--accent-secondary);
-  box-shadow: 0 0 4px var(--accent-secondary);
 }
 
 .score-val {
@@ -244,11 +241,11 @@ function toggleExpand() {
 /* Visual Flash animation for Targeted Inspect Card */
 @keyframes highlightFlash {
   0% {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(203, 75, 22, 0.25);
   }
   100% {
-    border-color: var(--border-subtle);
+    border-color: rgba(7, 54, 66, 0.15);
     box-shadow: none;
   }
 }
@@ -259,13 +256,12 @@ function toggleExpand() {
 
 /* Comparison highlights */
 .chunk-card.new-highlight {
-  border-color: rgba(0, 255, 136, 0.25);
-  background-color: rgba(0, 255, 136, 0.01);
+  border-color: rgba(42, 161, 152, 0.45);
+  background-color: rgba(42, 161, 152, 0.06);
 }
 
 .chunk-card.new-highlight:hover {
   border-color: var(--accent-success);
-  box-shadow: 0 0 10px rgba(0, 255, 136, 0.15);
 }
 
 .rank-badge-wrapper {
@@ -288,9 +284,9 @@ function toggleExpand() {
 }
 
 .new-badge {
-  background-color: rgba(0, 255, 136, 0.1);
+  background-color: rgba(42, 161, 152, 0.1);
   color: var(--accent-success);
-  border: 1px solid rgba(0, 255, 136, 0.2);
+  border: 1px solid rgba(42, 161, 152, 0.3);
   padding: 1px 6px;
   border-radius: var(--radius-sm);
   font-size: 0.65rem;

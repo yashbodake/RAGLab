@@ -37,22 +37,20 @@ const displayScore = computed(() => {
   gap: var(--spacing-sm);
   padding: 4px var(--spacing-sm);
   border-radius: var(--radius-sm);
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: var(--bg-panel);
   color: var(--text-muted);
-  font-size: 0.8rem;
-  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
   cursor: pointer;
   transition: all var(--transition-fast);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(7, 54, 66, 0.15);
   user-select: none;
   white-space: nowrap;
 }
 
 .source-chip:hover {
-  color: var(--accent-primary);
-  border-color: var(--border-active);
-  background-color: rgba(0, 240, 255, 0.05);
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
 }
 
 .chip-label {
@@ -61,16 +59,16 @@ const displayScore = computed(() => {
 
 .chip-score {
   font-family: var(--font-mono);
-  background-color: var(--bg-secondary);
+  background-color: rgba(7, 54, 66, 0.08);
   padding: 1px 4px;
   border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  border: 1px solid var(--border-subtle);
+  font-size: 0.72rem;
+  border: 1px solid rgba(7, 54, 66, 0.15);
   color: var(--text-dim);
 }
 
 .source-chip:hover .chip-score {
-  color: var(--accent-primary);
-  border-color: rgba(0, 240, 255, 0.3);
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
 }
 </style>

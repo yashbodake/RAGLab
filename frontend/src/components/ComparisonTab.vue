@@ -109,12 +109,12 @@ const enhancedChunksCompared = computed(() => {
   max-width: 320px;
   padding: var(--spacing-lg);
   text-align: center;
-  background-color: rgba(17, 24, 39, 0.3);
+  background-color: var(--bg-panel);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
-  border-color: var(--border-subtle);
+  border: 1px solid rgba(7, 54, 66, 0.15);
 }
 
 .disabled-box h3 {
@@ -152,17 +152,17 @@ const enhancedChunksCompared = computed(() => {
 
 .column-header {
   padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid rgba(7, 54, 66, 0.12);
   display: flex;
   flex-direction: column;
 }
 
 .col-title {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
 }
 
 .baseline .col-title {
@@ -170,8 +170,7 @@ const enhancedChunksCompared = computed(() => {
 }
 
 .enhanced .col-title {
-  color: var(--accent-primary);
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+  color: var(--accent-secondary);
 }
 
 .col-subtitle {

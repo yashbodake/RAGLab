@@ -12,14 +12,12 @@ function handleSend() {
   if (!query.value.trim() || isStreaming.value) return;
   emit('send', query.value);
   query.value = '';
-  // Reset height
   if (textareaRef.value) {
     textareaRef.value.style.height = 'auto';
   }
 }
 
 function handleKeyDown(e) {
-  // Submit on Enter without Shift
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     handleSend();
@@ -38,18 +36,18 @@ watch(query, () => {
 </script>
 
 <template>
-  <div class="chat-input-wrapper glass-panel">
-    <div class="input-row">
+  <div class="input-dock">
+    <div class="input-frame">
       <textarea
         ref="textareaRef"
         v-model="query"
-        placeholder="Ask a technical or maintenance question..."
+        placeholder="Inquire the Aether Archive..."
         rows="1"
         class="input-textarea"
         :disabled="isStreaming"
         @keydown="handleKeyDown"
       ></textarea>
-      
+
       <button
         class="send-button"
         :class="{ active: query.trim() && !isStreaming }"
@@ -57,110 +55,98 @@ watch(query, () => {
         aria-label="Send Query"
         @click="handleSend"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
+        <span class="material-symbols-outlined">north</span>
       </button>
     </div>
-    
-    <div class="input-controls">
-      <label class="compare-toggle">
+
+    <div class="input-meta">
+      <label class="compare-toggle" :class="{ disabled: isStreaming }">
         <input
           type="checkbox"
           v-model="compareWithBaseline"
           :disabled="isStreaming"
           class="compare-checkbox"
         />
-        <span class="compare-text">Compare with baseline (no RAG enhancements)</span>
+        <span class="compare-text">COMPARE_WITH_BASELINE</span>
       </label>
+      <span class="hint">↵ SEND · ⇧↵ NEWLINE</span>
     </div>
   </div>
 </template>
 
 <style scoped>
-.chat-input-wrapper {
-  margin-bottom: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  border-color: var(--border-subtle);
-  transition: all var(--transition-normal);
+/* Floating bottom dock — inspiration's centered bar with hard shadow */
+.input-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+  background: linear-gradient(to top, var(--bg-primary) 55%, rgba(253, 246, 227, 0));
+  pointer-events: none;
+  z-index: 20;
 }
 
-.chat-input-wrapper:focus-within {
-  border-color: var(--border-active);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
-}
-
-.input-row {
+.input-frame {
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
   display: flex;
   align-items: flex-end;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-shadow: 8px 8px 0 0 rgba(7, 54, 66, 1);
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-lg);
+  pointer-events: auto;
+  transition: box-shadow var(--transition-fast);
+}
+.input-frame:focus-within {
+  box-shadow: 6px 6px 0 0 var(--accent-secondary);
 }
 
 .input-textarea {
-  flex-grow: 1;
-  background: none;
+  flex: 1;
+  background: transparent;
   border: none;
-  resize: none;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  padding: var(--spacing-sm) 0;
-  max-height: 200px;
-  line-height: 1.4;
   outline: none;
+  resize: none;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #000000;
+  padding: 10px 0;
+  max-height: 200px;
+  overflow-y: auto;
 }
-
-.input-textarea::placeholder {
-  color: var(--text-dim);
-}
-
-.input-textarea:disabled {
-  color: var(--text-dim);
-}
+.input-textarea::placeholder { color: rgba(0, 0, 0, 0.3); }
+.input-textarea:disabled { opacity: 0.5; }
 
 .send-button {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-dim);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #000000;
+  color: #ffffff;
+  border: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  margin-bottom: 2px;
+  transition: background var(--transition-fast);
 }
+.send-button .material-symbols-outlined { font-size: 20px; }
+.send-button:disabled { opacity: 0.25; cursor: not-allowed; }
+.send-button.active:hover { background: var(--accent-secondary); }
 
-.send-button.active {
-  background-color: var(--accent-primary);
-  color: var(--bg-primary);
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 8px var(--accent-primary);
-}
-
-.send-button.active:hover {
-  background-color: #00d8e6;
-  box-shadow: 0 0 12px var(--accent-primary);
-}
-
-.send-button:disabled {
-  cursor: not-allowed;
-}
-
-.input-controls {
+/* Meta row */
+.input-meta {
+  max-width: var(--canvas-max-width);
+  margin: var(--spacing-sm) auto 0;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  gap: var(--spacing-md);
+  pointer-events: auto;
 }
 
 .compare-toggle {
@@ -170,19 +156,46 @@ watch(query, () => {
   cursor: pointer;
   user-select: none;
 }
+.compare-toggle.disabled { opacity: 0.5; cursor: not-allowed; }
 
 .compare-checkbox {
-  accent-color: var(--accent-secondary);
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--accent-primary);
+  background: transparent;
   cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+.compare-checkbox:checked {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+.compare-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .compare-text {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  transition: color var(--transition-fast);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
 }
 
-.compare-toggle:hover .compare-text {
-  color: var(--text-muted);
+.hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(7, 54, 66, 0.35);
 }
 </style>

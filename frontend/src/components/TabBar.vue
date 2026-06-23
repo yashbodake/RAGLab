@@ -29,21 +29,21 @@ const tabs = [
 <style scoped>
 .tab-bar {
   display: flex;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-panel);
+  border: 1px solid rgba(7, 54, 66, 0.15);
 }
 
 .tab-btn {
   flex-grow: 1;
   background: none;
   border: none;
-  padding: 12px var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-xs);
   color: var(--text-dim);
-  font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: center;
@@ -58,7 +58,7 @@ const tabs = [
 
 .tab-btn.active {
   color: var(--accent-primary);
-  background-color: rgba(0, 240, 255, 0.02);
+  background-color: var(--bg-primary);
 }
 
 .tab-btn.active::after {
@@ -68,7 +68,6 @@ const tabs = [
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--accent-primary);
-  box-shadow: 0 0 8px var(--accent-primary);
+  background-color: var(--accent-secondary);
 }
 </style>

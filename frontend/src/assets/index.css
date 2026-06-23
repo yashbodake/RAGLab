@@ -1,27 +1,30 @@
 :root {
-  /* Colors */
-  --bg-primary: #0B0F19;
-  --bg-secondary: #111827;
-  --bg-panel: rgba(255, 255, 255, 0.05);
-  --bg-panel-hover: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(0, 240, 255, 0.3);
+  /* ── Solarized "Digital Manuscript" palette ───────────────────────── */
+  --bg-primary: #FDF6E3;          /* parchment background */
+  --bg-secondary: #ffffff;        /* bright white surface (input/cards) */
+  --bg-panel: transparent;        /* outline-style panels, no fill */
+  --bg-panel-hover: rgba(7, 54, 66, 0.04);  /* subtle indigo wash on hover */
+  --bg-surface-lowest: #fdf6e3;
+  --bg-surface-low: #eee8d5;
+  --border-subtle: rgba(7, 54, 66, 0.14);
+  --border-active: rgba(203, 75, 22, 0.55);
 
-  --accent-primary: #00F0FF;
-  --accent-secondary: #FF007F;
-  --accent-success: #00FF88;
-  --accent-warning: #FFB800;
-  --accent-error: #FF3366;
+  --accent-primary: #073642;      /* deep indigo — primary text/brand */
+  --accent-secondary: #cb4b16;    /* terracotta — primary action */
+  --accent-success: #2aa198;      /* solarized cyan (status ok) */
+  --accent-warning: #b58900;      /* solarized yellow */
+  --accent-error: #dc322f;        /* solarized red */
+  --accent-terracotta-rgb: 203, 75, 22;
 
-  --text-primary: #E0E0E0;
-  --text-muted: #A0A0A0;
-  --text-dim: #606880;
+  --text-primary: #073642;
+  --text-muted: #586e75;          /* on-surface-variant */
+  --text-dim: #839496;
 
-  /* Glassmorphism */
-  --glass-blur: 12px;
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  /* ── Manuscript surfaces (replaces glassmorphism) ─────────────────── */
+  --ms-border: 1px solid rgba(7, 54, 66, 0.22);
+  --ms-bg: transparent;
+  --ms-shadow: 6px 6px 0 0 rgba(7, 54, 66, 1);   /* hard-edge brutalist shadow */
+  --ms-shadow-sm: 3px 3px 0 0 rgba(7, 54, 66, 1);
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -29,12 +32,13 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
+  --spacing-2xl: 64px;
 
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-full: 9999px;
+  /* Radius — brutalist: everything sharp */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-full: 0px;
 
   /* Transitions */
   --transition-fast: 0.15s ease;
@@ -42,14 +46,15 @@
   --transition-slow: 0.5s ease;
 
   /* Typography */
+  --font-headline: 'Libre Caslon Text', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
 
   /* Layout */
-  --sidebar-width: 320px;
-  --right-panel-width: 400px;
+  --canvas-max-width: 900px;
+  --drawer-width: 420px;
   --input-bar-height: 80px;
-  --header-height: 56px;
+  --header-height: 72px;
 }
 
 /* Base resets */
@@ -59,7 +64,7 @@
   padding: 0;
 }
 
-body {
+html, body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-body);
@@ -67,51 +72,101 @@ body {
   height: 100vh;
   width: 100vw;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar for Industrial Look */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Material Symbols defaults */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  user-select: none;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+/* CRT scanline overlay — the manuscript's ambient texture */
+body::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.03) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
+  background-size: 100% 2px, 3px 100%;
+  z-index: 9999;
+  pointer-events: none;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: var(--radius-sm);
-}
+/* Custom Scrollbar — solarized */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-panel); }
+::-webkit-scrollbar-thumb { background: var(--accent-primary); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-secondary); }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
-  box-shadow: 0 0 8px var(--accent-primary);
-}
-
-/* Glassmorphism utility */
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: var(--radius-md);
+/* ── Manuscript panel utility (replaces .glass-panel) ──────────────── */
+.manuscript-panel {
+  background: var(--ms-bg);
+  border: var(--ms-border);
   transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
-
-.glass-panel:hover {
-  border-color: var(--border-active);
+.manuscript-panel:hover {
+  border-color: rgba(7, 54, 66, 0.35);
 }
 
-/* Neon Glows */
-.neon-glow-primary {
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+/* Legacy alias kept so unported components degrade gracefully */
+.glass-panel {
+  background: var(--ms-bg);
+  border: var(--ms-border);
 }
 
-.neon-glow-secondary {
-  box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+/* Terracotta outline button (the inspiration's .terracotta-button) */
+.terracotta-button {
+  border: 1px solid var(--accent-secondary);
+  color: var(--accent-secondary);
+  background: transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
 }
+.terracotta-button:hover {
+  background-color: var(--accent-secondary);
+  color: var(--bg-primary);
+}
+
+/* Solarized outline button (subtle) */
+.solar-outline-button {
+  border: 1px solid rgba(7, 54, 66, 0.25);
+  color: var(--text-primary);
+  background: transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+.solar-outline-button:hover {
+  background: rgba(7, 54, 66, 0.06);
+}
+
+/* Label-caps utility (Space Mono uppercase tracking) */
+.label-caps {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Drop-cap on the first paragraph of an AI synthesis */
+.drop-cap::first-letter {
+  font-family: var(--font-headline);
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1rem 0.6rem 0 0;
+  color: var(--accent-primary);
+}
+
+/* Hard-edge brutalist shadow */
+.hard-shadow { box-shadow: var(--ms-shadow); }
+.hard-shadow-sm { box-shadow: var(--ms-shadow-sm); }
 
 /* Layout classes */
 .app-container {
@@ -121,25 +176,19 @@ body {
   width: 100vw;
 }
 
-.main-layout {
-  display: flex;
-  height: calc(100vh - var(--header-height));
+.manuscript-layout {
   position: relative;
+  height: calc(100vh - var(--header-height));
   overflow: hidden;
 }
 
-/* Animations */
+/* ── Animations ────────────────────────────────────────────────────── */
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
-
 .shimmer {
-  background: linear-gradient(90deg, var(--bg-panel) 25%, var(--bg-panel-hover) 50%, var(--bg-panel) 75%);
+  background: linear-gradient(90deg, var(--bg-surface-low) 25%, var(--bg-panel-hover) 50%, var(--bg-surface-low) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
 }
@@ -148,26 +197,52 @@ body {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
 }
-
 .typing-cursor {
   display: inline-block;
   width: 2px;
   height: 1.2em;
-  background: var(--accent-primary);
+  background: var(--accent-secondary);
   margin-left: 4px;
   vertical-align: middle;
   animation: cursorBlink 0.8s infinite;
 }
 
+@keyframes fadePulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+.fade-pulse { animation: fadePulse 1.4s ease-in-out infinite; }
+
 /* Simple fade slide transitions */
 .fade-slide-enter-active, .fade-slide-leave-active {
   transition: all var(--transition-normal);
 }
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
+.fade-slide-enter-from { opacity: 0; transform: translateY(10px); }
+.fade-slide-leave-to { opacity: 0; transform: translateY(-10px); }
+
+/* ── Slide-over drawer transitions ─────────────────────────────────── */
+.drawer-enter-active, .drawer-leave-active {
+  transition: opacity var(--transition-normal);
 }
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
+.drawer-enter-active .drawer-panel, .drawer-leave-active .drawer-panel {
+  transition: transform var(--transition-normal);
+}
+.drawer-left .drawer-panel {
+  transform: translateX(-100%);
+}
+.drawer-right .drawer-panel {
+  transform: translateX(100%);
+}
+.drawer-enter-to .drawer-panel, .drawer-leave-from .drawer-panel {
+  transform: translateX(0);
+}
+
+/* Highlight flash (preserved contract for inspectChunk()) */
+@keyframes highlightFlash {
+  0% { background-color: rgba(203, 75, 22, 0.35); }
+  100% { background-color: transparent; }
+}
+.highlight-flash {
+  animation: highlightFlash 1.5s ease-out;
 }

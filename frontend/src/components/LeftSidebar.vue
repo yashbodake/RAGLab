@@ -3,70 +3,49 @@ import FeatureToggles from './FeatureToggles.vue';
 import RetrievalModeSelector from './RetrievalModeSelector.vue';
 import MetricsPanel from './MetricsPanel.vue';
 
+// When embedded (rendered inside SlideDrawer), the outer chrome is dropped —
+// the drawer supplies width, scrolling, and the manuscript panel surface.
 defineProps({
-  open: Boolean
+  open: { type: Boolean, default: true },
+  embedded: { type: Boolean, default: false }
 });
 </script>
 
 <template>
-  <aside class="left-sidebar glass-panel" :class="{ collapsed: !open }">
-    <div class="sidebar-scroll">
-      <div class="sidebar-section">
-        <h3>Retrieval Config</h3>
-        <RetrievalModeSelector />
-      </div>
+  <div class="left-sidebar-content">
+    <section class="sidebar-section">
+      <h3 class="section-title label-caps">Retrieval Config</h3>
+      <RetrievalModeSelector />
+    </section>
 
-      <div class="sidebar-section">
-        <h3>Advanced Features</h3>
-        <FeatureToggles />
-      </div>
+    <section class="sidebar-section">
+      <h3 class="section-title label-caps">Advanced Features</h3>
+      <FeatureToggles />
+    </section>
 
-      <div class="sidebar-section">
-        <h3>Performance Metrics</h3>
-        <MetricsPanel />
-      </div>
-    </div>
-  </aside>
+    <section class="sidebar-section">
+      <h3 class="section-title label-caps">Performance Metrics</h3>
+      <MetricsPanel />
+    </section>
+  </div>
 </template>
 
 <style scoped>
-.left-sidebar {
-  width: var(--sidebar-width);
-  height: 100%;
-  border-radius: 0;
-  border-top: none;
-  border-bottom: none;
-  border-left: none;
-  background-color: rgba(17, 24, 39, 0.45);
-  transition: transform var(--transition-normal), width var(--transition-normal);
-  flex-shrink: 0;
-  overflow: hidden;
-  z-index: 5;
-}
-
-.left-sidebar.collapsed {
-  width: 0;
-  transform: translateX(-100%);
-  border-right: none;
-}
-
-.sidebar-scroll {
-  height: 100%;
-  overflow-y: auto;
-  padding: var(--spacing-md);
+.left-sidebar-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
 }
 
-.sidebar-section h3 {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text-dim);
-  margin-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: var(--spacing-xs);
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.section-title {
+  color: var(--accent-secondary);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(7, 54, 66, 0.12);
 }
 </style>

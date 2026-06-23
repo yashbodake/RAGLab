@@ -54,27 +54,26 @@ const selectedMode = computed({
 .custom-select {
   width: 100%;
   padding: 10px 30px 10px var(--spacing-sm);
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-primary);
+  border: 1px solid rgba(7, 54, 66, 0.25);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
   font-weight: 500;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast);
 }
 
 .custom-select:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--accent-primary);
 }
 
 .custom-select:focus {
   outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+  border-color: var(--accent-secondary);
 }
 
 .select-arrow {

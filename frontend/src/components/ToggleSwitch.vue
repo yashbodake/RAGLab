@@ -10,9 +10,9 @@ defineEmits(['update:modelValue']);
 <template>
   <div class="toggle-switch" role="switch" :aria-checked="modelValue.toString()" @click="$emit('update:modelValue', !modelValue)">
     <span class="label-text">{{ label }}</span>
-    <div class="switch-outer">
+    <div class="switch-outer" :class="{ active: modelValue }">
       <input type="checkbox" :checked="modelValue" class="hidden-input" />
-      <div class="switch-slider" :class="{ active: modelValue }"></div>
+      <div class="switch-slider"></div>
     </div>
   </div>
 </template>
@@ -24,13 +24,14 @@ defineEmits(['update:modelValue']);
   align-items: center;
   width: 100%;
   cursor: pointer;
-  padding: var(--spacing-sm) 0;
+  padding: var(--spacing-xs) 0;
   user-select: none;
 }
 
 .label-text {
-  font-size: 0.9rem;
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-muted);
   font-weight: 500;
   transition: color var(--transition-fast);
 }
@@ -41,12 +42,12 @@ defineEmits(['update:modelValue']);
 
 .switch-outer {
   position: relative;
-  width: 44px;
-  height: 22px;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
+  width: 42px;
+  height: 20px;
+  background-color: var(--bg-panel);
+  border: 1px solid rgba(7, 54, 66, 0.25);
   transition: all var(--transition-normal);
+  flex-shrink: 0;
 }
 
 .hidden-input {
@@ -55,22 +56,25 @@ defineEmits(['update:modelValue']);
 
 .switch-slider {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 1px;
+  left: 1px;
   width: 16px;
   height: 16px;
-  background-color: var(--text-dim);
-  border-radius: 50%;
+  background-color: var(--text-muted);
   transition: all var(--transition-normal);
 }
 
-.switch-slider.active {
-  transform: translateX(22px);
+/* ON state */
+.switch-outer.active {
   background-color: var(--accent-primary);
-  box-shadow: 0 0 10px var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+.switch-outer.active .switch-slider {
+  transform: translateX(22px);
+  background-color: var(--bg-primary);
 }
 
 .toggle-switch:hover .switch-outer {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--accent-primary);
 }
 </style>

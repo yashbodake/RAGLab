@@ -33,7 +33,7 @@ const { enhancedChunks } = useChunks();
 
 .tab-header {
   padding: var(--spacing-sm) var(--spacing-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(7, 54, 66, 0.12);
 }
 
 .tab-title {

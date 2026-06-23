@@ -16,32 +16,69 @@ const showSkeleton = computed(() => {
 
 <template>
   <main class="chat-area">
-    <div class="chat-container">
-      <MessageList :messages="messages" />
-      <SkeletonLoader v-if="showSkeleton" />
-      <ChatInput @send="sendQuery" />
+    <div class="chat-scroll">
+      <div class="chat-canvas">
+        <!-- State-zero welcome (only before first query) -->
+        <section class="state-zero" v-if="messages.length === 0">
+          <h1 class="welcome-headline">Aether Archive_</h1>
+          <p class="welcome-body">
+            Enter your query into the manuscript terminal. Your inquiry will be
+            retrieved, ranked, and synthesized across the industrial knowledge base.
+          </p>
+        </section>
+
+        <MessageList :messages="messages" />
+        <SkeletonLoader v-if="showSkeleton" />
+      </div>
     </div>
+
+    <ChatInput @send="sendQuery" />
   </main>
 </template>
 
 <style scoped>
 .chat-area {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
   background-color: var(--bg-primary);
   position: relative;
 }
 
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  max-width: 800px;
+.chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--spacing-2xl) var(--spacing-md) 180px;
+}
+
+.chat-canvas {
+  max-width: var(--canvas-max-width);
   width: 100%;
   margin: 0 auto;
-  padding: var(--spacing-md) var(--spacing-md) 0 var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+}
+
+/* State-zero welcome */
+.state-zero {
+  padding: var(--spacing-lg) var(--spacing-sm);
+}
+.welcome-headline {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--accent-primary);
+  margin-bottom: var(--spacing-lg);
+}
+.welcome-body {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 540px;
 }
 </style>

@@ -64,11 +64,12 @@ const displayDelta = computed(() => {
 .metric-card {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-sm);
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: var(--bg-panel);
+  border: 1px solid rgba(7, 54, 66, 0.12);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast);
 }
 
 .metric-card:hover {

@@ -6,48 +6,33 @@ import ChunkInspectorTab from './ChunkInspectorTab.vue';
 import ComparisonTab from './ComparisonTab.vue';
 
 defineProps({
-  open: Boolean
+  open: { type: Boolean, default: true },
+  embedded: { type: Boolean, default: false }
 });
 
 const { rightPanelTab } = useLayout();
 </script>
 
 <template>
-  <aside class="right-panel glass-panel" :class="{ collapsed: !open }">
+  <div class="right-panel-content">
     <TabBar />
     <div class="panel-content">
       <LogStreamTab v-if="rightPanelTab === 0" />
       <ChunkInspectorTab v-if="rightPanelTab === 1" />
       <ComparisonTab v-if="rightPanelTab === 2" />
     </div>
-  </aside>
+  </div>
 </template>
 
 <style scoped>
-.right-panel {
-  width: var(--right-panel-width);
-  height: 100%;
-  border-radius: 0;
-  border-top: none;
-  border-bottom: none;
-  border-right: none;
-  background-color: rgba(17, 24, 39, 0.45);
-  transition: transform var(--transition-normal), width var(--transition-normal);
-  flex-shrink: 0;
+.right-panel-content {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  z-index: 5;
-}
-
-.right-panel.collapsed {
-  width: 0;
-  transform: translateX(100%);
-  border-left: none;
+  gap: var(--spacing-md);
 }
 
 .panel-content {
-  flex-grow: 1;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 </style>
