@@ -1,0 +1,15 @@
+.git
+.github
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+frontend/node_modules
+frontend/dist
+node_modules
+static/
+data/chroma_db_test
+data/huggingface_test
+/data

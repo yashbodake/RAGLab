@@ -1,0 +1,52 @@
+[
+  {
+    "id": "art_upload_f2745698",
+    "filename": "Ikigai _ the Japanese secret to a long and happy life ( PDFDrive.com ).pdf",
+    "title": "Ikigai   the Japanese secret to a long and happy life ( PDFDrive.com )",
+    "upload_time": "2026-06-23T12:55:15.499952Z",
+    "status": "success",
+    "active": true,
+    "error_message": null,
+    "chunk_count": 255
+  },
+  {
+    "id": "art_upload_91b7ae16",
+    "filename": "switch_s500.txt",
+    "title": "switch s500",
+    "upload_time": "2026-06-23T15:33:07.416607Z",
+    "status": "success",
+    "active": true,
+    "error_message": null,
+    "chunk_count": 1
+  },
+  {
+    "id": "art_upload_fa06ce41",
+    "filename": "generator_warning.json",
+    "title": "generator warning",
+    "upload_time": "2026-06-23T15:33:08.608310Z",
+    "status": "success",
+    "active": true,
+    "error_message": null,
+    "chunk_count": 1
+  },
+  {
+    "id": "art_upload_7252d6c9",
+    "filename": "calibration_proc.pdf",
+    "title": "calibration proc",
+    "upload_time": "2026-06-23T15:33:29.257986Z",
+    "status": "success",
+    "active": true,
+    "error_message": null,
+    "chunk_count": 1
+  },
+  {
+    "id": "art_upload_27d111d1",
+    "filename": "bad.json",
+    "title": "bad",
+    "upload_time": "2026-06-23T15:33:30.673662Z",
+    "status": "failed",
+    "active": true,
+    "error_message": "Invalid JSON file format",
+    "chunk_count": 0
+  }
+]

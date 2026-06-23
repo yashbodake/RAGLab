@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zen Flow | Digital Manuscript</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Space+Mono:wght@400;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary": "#002e6b",
+                      "tertiary-fixed": "#ffd9dd",
+                      "primary-fixed": "#d8e2ff",
+                      "secondary-fixed-dim": "#d4bbff",
+                      "outline-variant": "#434751",
+                      "tertiary-container": "#fc7a92",
+                      "error": "#ffb4ab",
+                      "on-surface": "#073642",
+                      "on-secondary": "#3d1b72",
+                      "primary-fixed-dim": "#aec6ff",
+                      "on-secondary-fixed": "#260058",
+                      "on-error-container": "#ffdad6",
+                      "outline": "#073642",
+                      "on-primary-container": "#00367d",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#eee8d5",
+                      "surface-container-high": "#f5efdc",
+                      "background": "#FDF6E3",
+                      "surface": "#FDF6E3",
+                      "surface-container-low": "#eee8d5",
+                      "on-error": "#690005",
+                      "inverse-surface": "#073642",
+                      "on-secondary-fixed-variant": "#54358a",
+                      "secondary-container": "#eee8d5",
+                      "primary": "#073642",
+                      "on-tertiary": "#660224",
+                      "on-tertiary-container": "#730e2c",
+                      "on-tertiary-fixed-variant": "#851e39",
+                      "surface-tint": "#073642",
+                      "surface-dim": "#eee8d5",
+                      "on-primary-fixed": "#001a43",
+                      "tertiary": "#cb4b16",
+                      "secondary-fixed": "#ebdcff",
+                      "secondary": "#073642",
+                      "on-surface-variant": "#586e75",
+                      "primary-container": "#eee8d5",
+                      "surface-bright": "#fdf6e3",
+                      "on-tertiary-fixed": "#400013",
+                      "on-primary-fixed-variant": "#0c4393",
+                      "on-secondary-container": "#073642",
+                      "surface-variant": "#eee8d5",
+                      "surface-container-lowest": "#fdf6e3",
+                      "tertiary-fixed-dim": "#ffb2bc",
+                      "surface-container": "#eee8d5",
+                      "inverse-primary": "#305cac",
+                      "inverse-on-surface": "#fdf6e3",
+                      "on-background": "#073642"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0px",
+                      "lg": "0px",
+                      "xl": "0px",
+                      "full": "0px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "unit": "8px",
+                      "margin-desktop": "64px",
+                      "max-width": "900px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-xl": ["Libre Caslon Text"],
+                      "data-mono": ["Space Mono"],
+                      "headline-lg": ["Libre Caslon Text"],
+                      "headline-lg-mobile": ["Libre Caslon Text"],
+                      "body-md": ["Inter"],
+                      "label-caps": ["Space Mono"]
+              },
+              "fontSize": {
+                      "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "data-mono": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.05em", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.25", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #FDF6E3;
+            color: #073642;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.03) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
+            z-index: 9999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .solar-border {
+            border: 1px solid #073642;
+        }
+
+        .terracotta-button {
+            border: 1px solid #cb4b16;
+            color: #cb4b16;
+            transition: all 0.2s ease;
+        }
+
+        .terracotta-button:hover {
+            background-color: #cb4b16;
+            color: #FDF6E3;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #eee8d5;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #073642;
+        }
+
+        .immersive-column {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-tertiary/30">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-primary/10 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20">
+<div class="flex items-center gap-8">
+<span class="font-headline-lg-mobile md:font-headline-lg font-bold tracking-tighter text-primary">AETHER_ARCHIVE</span>
+<!-- Simplified Terminal Modes Integration -->
+<div class="hidden lg:flex items-center gap-1">
+<button class="flex items-center gap-2 px-3 py-1 hover:bg-primary/5 transition-colors group">
+<span class="material-symbols-outlined text-[20px]">menu</span>
+<span class="font-label-caps text-label-caps opacity-60 group-hover:opacity-100">MODES</span>
+</button>
+<nav class="flex gap-6 ml-6 border-l border-primary/15 pl-6">
+<a class="text-primary font-bold border-b border-primary pb-1 font-label-caps text-label-caps" href="#">Research</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-label-caps text-label-caps" href="#">Documents</a>
+</nav>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-primary cursor-pointer active:opacity-70">history</button>
+<button class="material-symbols-outlined text-primary cursor-pointer active:opacity-70">settings</button>
+<div class="h-10 w-10 bg-primary text-background flex items-center justify-center font-bold text-sm">AF</div>
+</div>
+</header>
+<!-- Main Content Canvas - Center-focused Column -->
+<main class="pt-32 pb-48 px-margin-mobile md:px-0 flex flex-col items-center min-h-screen">
+<div class="immersive-column space-y-16">
+<!-- Welcome / State Zero -->
+<section class="animate-fade-in px-4">
+<h1 class="font-headline-xl text-headline-xl mb-6">Zen Flow_</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+                Enter your query into the solarized terminal. Your thoughts will be archived and synthesized through the Aether network.
+            </p>
+</section>
+<!-- Chat Stream -->
+<div class="flex flex-col gap-20">
+<!-- User Prompt (Centered/Manuscript Style) -->
+<article class="w-full">
+<div class="bg-surface-container-high/40 border-y md:border border-primary/10 p-8 md:p-12 relative">
+<div class="absolute -top-3 left-8 bg-background px-2 font-data-mono text-[10px] text-primary/60">
+                        USER_INPUT // 14:02:11
+                    </div>
+<p class="font-body-md text-[18px] md:text-[20px] leading-relaxed italic text-on-surface/90">
+                        "Summarize the recent findings on synaptic plasticity within the context of late-night deep work sessions. Is there a measurable cognitive 'Aether' state?"
+                    </p>
+</div>
+</article>
+<!-- AI Response -->
+<article class="w-full space-y-10">
+<div class="flex items-center gap-3 px-4">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-caps text-label-caps tracking-widest text-primary">AETHER_SYNTHESIS_ACTIVE</span>
+</div>
+<div class="px-4 space-y-8">
+<h2 class="font-headline-lg text-[32px] md:text-[40px] leading-tight max-w-2xl">
+                        The "E-Ink" Cognitive Resonance: Findings on Focused States.
+                    </h2>
+<div class="font-body-md text-body-md space-y-8 leading-relaxed text-on-surface/90">
+<p class="first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left first-letter:text-primary">
+                            Recent longitudinal studies suggest that high-contrast, low-distraction environments—mimicking the aesthetic of analog parchment—significantly reduce cognitive load during synaptic restructuring. This is colloquially referred to in the Zen Flow framework as the <span class="font-bold underline decoration-tertiary decoration-2 underline-offset-4">Aether State</span>.
+                        </p>
+<p>Key findings include:</p>
+<ul class="list-none space-y-6 font-data-mono text-data-mono pl-4 border-l border-primary/10">
+<li class="flex items-start gap-4">
+<span class="text-tertiary font-bold">01_</span>
+<span>Reduction in cortisol spikes when using warm-spectrum backlighting (#FDF6E3).</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="text-tertiary font-bold">02_</span>
+<span>Increased alpha-wave stability during the hours of 01:00 and 04:00 AM.</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="text-tertiary font-bold">03_</span>
+<span>Deep Indigo text rendering improves saccadic movement efficiency.</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Inline Contextual Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 px-4 mt-12">
+<div class="md:col-span-8 border border-primary/10 bg-surface-container-lowest/50 p-6">
+<h3 class="font-label-caps text-label-caps mb-4 text-primary">VISUAL_COGNITION_MAP</h3>
+<div class="h-64 w-full bg-surface-container-low border border-primary/5 flex items-center justify-center relative">
+<div class="absolute inset-0 bg-[radial-gradient(#073642_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]"></div>
+<span class="font-data-mono text-[10px] uppercase opacity-40">Dynamic Neural Overlay Tracking...</span>
+</div>
+</div>
+<div class="md:col-span-4 flex flex-col gap-8">
+<div class="border border-primary/10 p-6 bg-surface-container-lowest/50 flex-1">
+<h3 class="font-label-caps text-label-caps mb-3 text-tertiary">PRO_TIP</h3>
+<p class="text-sm font-body-md italic text-on-surface-variant leading-relaxed">"Maintaining a warm-light parchment background reduces eye-strain during 4+ hour deep work sprints."</p>
+</div>
+<div class="border border-primary/10 p-4 bg-surface-container-low/30">
+<p class="font-data-mono text-[10px] text-primary/60 mb-1">SYSTEM_STATUS</p>
+<p class="text-[11px] font-medium">Upgrade to Pro for Deep Focus tokens.</p>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 px-4 pt-6">
+<button class="terracotta-button px-6 py-3 font-label-caps text-label-caps flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">menu_book</span> Sources
+                    </button>
+<button class="border border-primary/20 px-6 py-3 font-label-caps text-label-caps flex items-center gap-2 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span> Copy Terminal
+                    </button>
+<button class="border border-primary/20 px-6 py-3 font-label-caps text-label-caps flex items-center gap-2 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-sm">refresh</span> Re-Synthesize
+                    </button>
+</div>
+</article>
+</div>
+</div>
+</main>
+<!-- Floating Bottom Input Bar - Centered and Immersive -->
+<div class="fixed bottom-0 left-0 right-0 p-8 flex justify-center bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none z-40">
+<div class="immersive-column pointer-events-auto">
+<div class="relative bg-white border border-black shadow-[8px_8px_0px_0px_rgba(7,54,66,1)]">
+<textarea class="w-full bg-transparent border-none focus:ring-0 py-6 px-8 pr-20 font-data-mono text-data-mono resize-none text-black placeholder-black/30 overflow-hidden leading-relaxed" oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" placeholder="Inquire the Aether Archive..." rows="1"></textarea>
+<div class="absolute right-6 bottom-5 flex items-center gap-4">
+<button class="material-symbols-outlined text-black opacity-30 hover:opacity-100 transition-opacity">attach_file</button>
+<button class="bg-black text-white h-10 w-10 flex items-center justify-center hover:bg-tertiary transition-colors">
+<span class="material-symbols-outlined">north</span>
+</button>
+</div>
+</div>
+<div class="flex justify-between items-center px-2 mt-6">
+<div class="flex gap-6">
+<p class="font-label-caps text-[10px] opacity-40">CMD + K TO SEARCH</p>
+<p class="font-label-caps text-[10px] opacity-40">UPTIME: 08:42:12</p>
+</div>
+<p class="font-label-caps text-[10px] opacity-40">ZEN_FLOW v.1.04.2</p>
+</div>
+</div>
+</div>
+<!-- Modal-like Mode Overlay (Hidden by default) -->
+<div class="hidden fixed inset-0 z-[60] bg-background/95 backdrop-blur-sm flex items-center justify-center p-10" id="mode-menu">
+<div class="immersive-column">
+<div class="flex justify-between items-center mb-16 border-b border-primary/20 pb-8">
+<h2 class="font-label-caps text-headline-lg tracking-widest text-primary">TERMINAL_MODES</h2>
+<button class="material-symbols-outlined text-4xl hover:text-tertiary" onclick="document.getElementById('mode-menu').classList.add('hidden')">close</button>
+</div>
+<nav class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<a class="group border border-primary/10 p-8 hover:bg-primary/5 transition-all" href="#">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">search_check</span>
+<h4 class="font-headline-lg mb-2">Research</h4>
+<p class="font-body-md text-sm text-on-surface-variant">Deep synthesis of the Aether archives.</p>
+</a>
+<a class="group border border-primary/10 p-8 hover:bg-primary/5 transition-all" href="#">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant mb-4">database</span>
+<h4 class="font-headline-lg mb-2">Knowledge Base</h4>
+<p class="font-body-md text-sm text-on-surface-variant">Static repository of historic findings.</p>
+</a>
+<a class="group border border-primary/10 p-8 hover:bg-primary/5 transition-all" href="#">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant mb-4">monitoring</span>
+<h4 class="font-headline-lg mb-2">Analytics</h4>
+<p class="font-body-md text-sm text-on-surface-variant">Neural telemetry and alpha-wave tracking.</p>
+</a>
+<a class="group border border-primary/10 p-8 hover:bg-primary/5 transition-all" href="#">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant mb-4">inventory_2</span>
+<h4 class="font-headline-lg mb-2">Archive</h4>
+<p class="font-body-md text-sm text-on-surface-variant">Cold storage for past syntheses.</p>
+</a>
+</nav>
+<div class="mt-20 pt-8 border-t border-primary/10 flex justify-center gap-12">
+<a class="flex items-center gap-2 text-on-surface-variant font-label-caps text-[12px] hover:text-primary" href="#"><span class="material-symbols-outlined text-sm">help_outline</span> Help &amp; Support</a>
+<a class="flex items-center gap-2 text-on-surface-variant font-label-caps text-[12px] hover:text-primary" href="#"><span class="material-symbols-outlined text-sm">logout</span> Logout session</a>
+</div>
+</div>
+</div>
+<script>
+    // Toggle Mode Menu
+    const menuBtn = document.querySelector('button.group');
+    if (menuBtn) {
+        menuBtn.addEventListener('click', () => {
+            document.getElementById('mode-menu').classList.remove('hidden');
+        });
+    }
+
+    // Auto-focus and CMD+K support
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            document.querySelector('textarea').focus();
+        }
+        if (e.key === 'Escape') {
+            document.getElementById('mode-menu').classList.add('hidden');
+        }
+    });
+
+    // Ambient Thinking Indicator
+    const thinkingIndicator = document.querySelector('.material-symbols-outlined[style*="FILL"]');
+    if (thinkingIndicator) {
+        let opacity = 0.4;
+        let direction = 1;
+        setInterval(() => {
+            opacity += 0.05 * direction;
+            if (opacity >= 1 || opacity <= 0.4) direction *= -1;
+            thinkingIndicator.style.opacity = opacity;
+        }, 100);
+    }
+</script>
+</body></html>

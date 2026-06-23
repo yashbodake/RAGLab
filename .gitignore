@@ -1,0 +1,21 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+data/chroma_db/
+data/chroma_db_test/
+data/huggingface/
+data/huggingface_test/
+.app.pids
+*.log
+
+# Build deps & output
+frontend/node_modules/
+frontend/dist/
+static/
+
+# OS / editor junk
+*.lnk
+.DS_Store
