@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useChat } from '../composables/useChat';
 import { useFeatures } from '../composables/useFeatures';
 import MessageList from './MessageList.vue';
@@ -14,6 +14,15 @@ const showSkeleton = computed(() => {
   const lastMsg = messages.value[messages.value.length - 1];
   return lastMsg && lastMsg.role === 'assistant' && !lastMsg.content;
 });
+
+// Feature grid is collapsed by default so the welcome screen stays clean —
+// everything (headline + message + input hint) fits in one frame.
+const featuresExpanded = ref(false);
+
+// Count of currently-enabled features, for the badge.
+const activeFeatureCount = computed(() =>
+  Object.values(features).filter(Boolean).length
+);
 
 // The 7 retrieval features, surfaced as quick-toggle chips on the welcome
 // screen. Same state (useFeatures) as the CONFIG modal — toggling here is
@@ -42,25 +51,30 @@ const featureChips = [
             retrieved, ranked, and synthesized across the industrial knowledge base.
           </p>
 
-          <!-- Feature showcase — quick-toggle, synced with the CONFIG modal -->
+          <!-- Feature showcase — collapsed by default to keep the screen clean -->
           <div class="welcome-features">
-            <h3 class="features-title label-caps">Configure Retrieval Techniques</h3>
-            <p class="features-sub">Tap to enable. Available as a full panel anytime via <strong>CONFIG</strong>.</p>
-            <div class="feature-grid">
-              <button
-                v-for="feat in featureChips"
-                :key="feat.key"
-                class="feature-chip"
-                :class="{ active: features[feat.key] }"
-                @click="toggleFeature(feat.key)"
-              >
-                <span class="chip-name">{{ feat.label }}</span>
-                <span class="chip-hint">{{ feat.hint }}</span>
-                <span class="chip-state" :class="{ on: features[feat.key] }">
-                  {{ features[feat.key] ? 'ON' : 'OFF' }}
-                </span>
-              </button>
-            </div>
+            <button class="features-toggle" @click="featuresExpanded = !featuresExpanded">
+              <span class="material-symbols-outlined chevron" :class="{ open: featuresExpanded }">expand_more</span>
+              <span class="features-title label-caps">Configure Retrieval Techniques</span>
+              <span class="features-badge" :class="{ has: activeFeatureCount > 0 }">{{ activeFeatureCount }}/7 active</span>
+            </button>
+            <Transition name="feature-expand">
+              <div v-show="featuresExpanded" class="feature-grid">
+                <button
+                  v-for="feat in featureChips"
+                  :key="feat.key"
+                  class="feature-chip"
+                  :class="{ active: features[feat.key] }"
+                  @click="toggleFeature(feat.key)"
+                >
+                  <span class="chip-name">{{ feat.label }}</span>
+                  <span class="chip-hint">{{ feat.hint }}</span>
+                  <span class="chip-state" :class="{ on: features[feat.key] }">
+                    {{ features[feat.key] ? 'ON' : 'OFF' }}
+                  </span>
+                </button>
+              </div>
+            </Transition>
           </div>
         </section>
 
@@ -126,31 +140,75 @@ const featureChips = [
   margin-bottom: var(--spacing-2xl);
 }
 
-/* ── Feature showcase ────────────────────────────────────────────── */
+/* ── Feature showcase (collapsed by default) ─────────────────────── */
 .welcome-features {
   border-top: 1px solid rgba(7, 54, 66, 0.12);
-  padding-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
 }
+
+.features-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  background: none;
+  border: 1px solid rgba(7, 54, 66, 0.18);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.features-toggle:hover {
+  border-color: var(--accent-secondary);
+  background: rgba(203, 75, 22, 0.03);
+}
+
+.chevron {
+  font-size: 20px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+.chevron.open {
+  transform: rotate(180deg);
+  color: var(--accent-secondary);
+}
+
 .features-title {
   color: var(--accent-primary);
   font-size: 12px;
-  margin-bottom: var(--spacing-xs);
+  flex: 1;
+  text-align: left;
 }
-.features-sub {
-  font-family: var(--font-body);
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  margin-bottom: var(--spacing-lg);
-}
-.features-sub strong {
-  color: var(--accent-secondary);
+
+.features-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  border: 1px solid rgba(7, 54, 66, 0.2);
+  padding: 2px 6px;
+}
+.features-badge.has {
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+
+/* Expand/collapse transition */
+.feature-expand-enter-active,
+.feature-expand-leave-active {
+  transition: opacity var(--transition-normal) ease;
+  overflow: hidden;
+}
+.feature-expand-enter-from,
+.feature-expand-leave-to {
+  opacity: 0;
 }
 
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
 }
 
 .feature-chip {
