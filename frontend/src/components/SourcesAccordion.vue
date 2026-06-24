@@ -30,11 +30,19 @@ const expanded = ref(false);
       <span>Cited Sources ({{ sources.length }})</span>
     </button>
     
-    <div v-show="expanded" class="accordion-content">
-      <div class="chips-container">
-        <SourceChip v-for="src in sources" :key="src.id" :chunk="src" />
+    <Transition name="accordion">
+      <div v-show="expanded" class="accordion-content">
+        <div class="chips-container">
+          <SourceChip
+            v-for="(src, i) in sources"
+            :key="src.id"
+            :chunk="src"
+            class="source-chip-anim"
+            :style="{ '--chip-delay': `${i * 40}ms` }"
+          />
+        </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -83,5 +91,34 @@ const expanded = ref(false);
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-xs);
+}
+
+/* Accordion expand/collapse: height + opacity reveal */
+.accordion-enter-active,
+.accordion-leave-active {
+  transition: max-height var(--transition-normal) ease, opacity var(--transition-normal) ease, margin-top var(--transition-normal) ease;
+  overflow: hidden;
+}
+.accordion-enter-from,
+.accordion-leave-to {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+.accordion-enter-to,
+.accordion-leave-from {
+  max-height: 400px;
+  opacity: 1;
+}
+
+/* Each chip fades+slides in, staggered by --chip-delay */
+.source-chip-anim {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: chipIn 0.3s ease forwards;
+  animation-delay: var(--chip-delay, 0ms);
+}
+@keyframes chipIn {
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

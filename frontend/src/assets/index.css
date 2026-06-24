@@ -221,22 +221,22 @@ body::after {
 .fade-slide-enter-from { opacity: 0; transform: translateY(10px); }
 .fade-slide-leave-to { opacity: 0; transform: translateY(-10px); }
 
-/* ── Slide-over drawer transitions ─────────────────────────────────── */
-.drawer-enter-active, .drawer-leave-active {
-  transition: opacity var(--transition-normal);
+/* ── View transition (RAG Chat ↔ Documents) ───────────────────────── */
+/* out-in: old view scales-down + fades out, then new view scales-up + fades in */
+.view-transition-enter-active,
+.view-transition-leave-active {
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
 }
-.drawer-enter-active .drawer-panel, .drawer-leave-active .drawer-panel {
-  transition: transform var(--transition-normal);
+.view-transition-enter-from {
+  opacity: 0;
+  transform: scale(0.97);
 }
-.drawer-left .drawer-panel {
-  transform: translateX(-100%);
+.view-transition-leave-to {
+  opacity: 0;
+  transform: scale(0.97);
 }
-.drawer-right .drawer-panel {
-  transform: translateX(100%);
-}
-.drawer-enter-to .drawer-panel, .drawer-leave-from .drawer-panel {
-  transform: translateX(0);
-}
+
+/* (Drawer/modal transitions live in SlideDrawer.vue scoped styles.) */
 
 /* Highlight flash (preserved contract for inspectChunk()) */
 @keyframes highlightFlash {

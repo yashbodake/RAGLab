@@ -23,33 +23,38 @@ const currentPage = ref('chat');
       @toggle-right-panel="toggleRightPanel"
     />
 
-    <!-- Chat view: single immersive column + two slide-over drawers -->
-    <div class="manuscript-layout" v-if="currentPage === 'chat'">
-      <ChatArea />
+    <!-- View swap: old view scales-down + fades out, new view scales-up + fades in -->
+    <Transition name="view-transition" mode="out-in">
+      <!-- Chat view: single immersive column + CONFIG modal + INSPECT side panel -->
+      <div class="manuscript-layout" v-if="currentPage === 'chat'" key="chat">
+        <ChatArea />
 
-      <SlideDrawer
-        side="left"
-        :open="sidebarOpen"
-        title="Configuration"
-        sub="RETRIEVAL // FEATURES // METRICS"
-        @close="toggleSidebar"
-      >
-        <LeftSidebar :embedded="true" />
-      </SlideDrawer>
+        <!-- CONFIG: centered modal overlay (matches inspiration MODES menu) -->
+        <SlideDrawer
+          side="center"
+          :open="sidebarOpen"
+          title="Terminal Config"
+          sub="RETRIEVAL // FEATURES // METRICS"
+          @close="toggleSidebar"
+        >
+          <LeftSidebar :embedded="true" />
+        </SlideDrawer>
 
-      <SlideDrawer
-        side="right"
-        :open="rightPanelOpen"
-        title="Inspector"
-        sub="LOGS // CHUNKS // COMPARE"
-        @close="toggleRightPanel"
-      >
-        <RightPanel :embedded="true" />
-      </SlideDrawer>
-    </div>
+        <!-- INSPECT: right slide-over panel (reference panel) -->
+        <SlideDrawer
+          side="right"
+          :open="rightPanelOpen"
+          title="Inspector"
+          sub="LOGS // CHUNKS // COMPARE"
+          @close="toggleRightPanel"
+        >
+          <RightPanel :embedded="true" />
+        </SlideDrawer>
+      </div>
 
-    <!-- Document Manager view (full-page replacement) -->
-    <DocumentManager v-else />
+      <!-- Document Manager view (full-page replacement) -->
+      <DocumentManager v-else key="documents" />
+    </Transition>
   </div>
 </template>
 

@@ -436,7 +436,7 @@ function getFileIcon(filename) {
 <style scoped>
 .document-manager-page {
   flex: 1;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-2xl) var(--spacing-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
@@ -447,14 +447,15 @@ function getFileIcon(filename) {
 }
 
 .page-header h2 {
-  font-size: 1.5rem;
+  font-family: var(--font-headline);
+  font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  color: var(--accent-primary);
 }
 
 .page-header .subtitle {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
   margin-top: 4px;
 }
@@ -471,40 +472,41 @@ function getFileIcon(filename) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background-color: rgba(17, 24, 39, 0.4);
+  background-color: transparent;
+  border: 1px solid rgba(7, 54, 66, 0.18);
 }
 
 .metric-label {
-  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
 }
 
 .metric-value {
+  font-family: var(--font-mono);
   font-size: 1.8rem;
-  font-weight: 800;
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 .text-success .metric-value {
   color: var(--accent-success);
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
 
 .text-error .metric-value {
   color: var(--accent-error);
-  text-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
 }
 
 .pulse-blue {
-  border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+  border-color: var(--accent-warning) !important;
   animation: pulseBorder 2s infinite ease-in-out;
 }
 
 @keyframes pulseBorder {
-  0%, 100% { border-color: var(--border-subtle); }
-  50% { border-color: var(--accent-primary); }
+  0%, 100% { border-color: rgba(7, 54, 66, 0.18); }
+  50% { border-color: var(--accent-warning); }
 }
 
 /* Layout Content */
@@ -530,18 +532,21 @@ function getFileIcon(filename) {
   flex-direction: column;
   gap: var(--spacing-md);
   height: fit-content;
-  background-color: rgba(17, 24, 39, 0.3);
+  background-color: transparent;
+  border: 1px solid rgba(7, 54, 66, 0.18);
 }
 
 .upload-side h3 {
-  font-size: 1rem;
+  font-family: var(--font-headline);
+  font-size: 1.05rem;
   font-weight: 700;
+  color: var(--accent-primary);
 }
 
 .upload-side .description {
   font-size: 0.8rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .listing-side {
@@ -551,7 +556,8 @@ function getFileIcon(filename) {
   flex-direction: column;
   gap: var(--spacing-md);
   min-height: 400px;
-  background-color: rgba(17, 24, 39, 0.3);
+  background-color: transparent;
+  border: 1px solid rgba(7, 54, 66, 0.18);
   overflow: hidden;
 }
 
@@ -562,16 +568,17 @@ function getFileIcon(filename) {
 }
 
 .section-title h3 {
-  font-size: 1rem;
+  font-family: var(--font-headline);
+  font-size: 1.05rem;
   font-weight: 700;
+  color: var(--accent-primary);
 }
 
 .refresh-btn {
   background: none;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(7, 54, 66, 0.2);
   color: var(--text-muted);
   padding: 6px;
-  border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -579,9 +586,8 @@ function getFileIcon(filename) {
 }
 
 .refresh-btn:hover {
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
-  background-color: rgba(0, 240, 255, 0.05);
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
 }
 
 .refresh-btn:disabled {
@@ -599,25 +605,23 @@ function getFileIcon(filename) {
 
 /* Dropzone Styling */
 .dropzone {
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-md);
+  border: 1px dashed rgba(7, 54, 66, 0.35);
   padding: var(--spacing-xl) var(--spacing-md);
   text-align: center;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.01);
+  background-color: transparent;
   transition: all var(--transition-normal);
 }
 
 .dropzone:hover, .dropzone.dragging {
-  border-color: var(--accent-primary);
-  background-color: rgba(0, 240, 255, 0.02);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+  border-color: var(--accent-secondary);
+  background-color: rgba(203, 75, 22, 0.04);
 }
 
 .dropzone.has-file {
   border-style: solid;
-  border-color: rgba(0, 255, 136, 0.3);
-  background-color: rgba(0, 255, 136, 0.01);
+  border-color: var(--accent-success);
+  background-color: rgba(42, 161, 152, 0.05);
 }
 
 .hidden-file-input {
@@ -637,7 +641,7 @@ function getFileIcon(filename) {
 }
 
 .dropzone:hover .upload-icon, .dropzone.dragging .upload-icon {
-  color: var(--accent-primary);
+  color: var(--accent-secondary);
 }
 
 .dropzone.has-file .upload-icon {
@@ -650,26 +654,30 @@ function getFileIcon(filename) {
 }
 
 .filename-text {
+  font-family: var(--font-mono);
   font-size: 0.85rem;
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--accent-primary);
+  font-weight: 700;
   word-break: break-all;
 }
 
 .file-limits {
-  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
   color: var(--text-dim);
+  letter-spacing: 0.04em;
 }
 
 .upload-btn {
-  background-color: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  color: var(--accent-primary);
+  background-color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  color: var(--bg-primary);
   padding: 12px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   cursor: pointer;
   transition: all var(--transition-fast);
   width: 100%;
@@ -679,34 +687,34 @@ function getFileIcon(filename) {
 }
 
 .upload-btn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  background-color: rgba(0, 240, 255, 0.05);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+  background-color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
 }
 
 .upload-btn:disabled {
+  background-color: transparent;
   color: var(--text-dim);
   cursor: not-allowed;
-  border-color: var(--border-subtle);
+  border-color: rgba(7, 54, 66, 0.2);
 }
 
 .feedback-msg {
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
   padding: var(--spacing-sm);
-  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   margin-top: 4px;
 }
 
 .feedback-msg.success {
-  background-color: rgba(0, 255, 136, 0.05);
-  border-color: rgba(0, 255, 136, 0.15);
+  background-color: rgba(42, 161, 152, 0.08);
+  border-color: rgba(42, 161, 152, 0.3);
   color: var(--accent-success);
 }
 
 .feedback-msg.error {
-  background-color: rgba(255, 51, 102, 0.05);
-  border-color: rgba(255, 51, 102, 0.15);
+  background-color: rgba(220, 50, 47, 0.08);
+  border-color: rgba(220, 50, 47, 0.3);
   color: var(--accent-error);
 }
 
@@ -720,9 +728,9 @@ function getFileIcon(filename) {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(0, 240, 255, 0.2);
+  border: 2px solid rgba(253, 246, 227, 0.3);
   border-radius: 50%;
-  border-top-color: var(--accent-primary);
+  border-top-color: var(--bg-primary);
   animation: spin 0.8s infinite linear;
 }
 
@@ -730,8 +738,7 @@ function getFileIcon(filename) {
 .table-container {
   flex: 1;
   overflow-y: auto;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(7, 54, 66, 0.15);
 }
 
 .docs-table {
@@ -742,22 +749,26 @@ function getFileIcon(filename) {
 }
 
 .docs-table th {
-  background-color: rgba(17, 24, 39, 0.6);
+  background-color: var(--bg-surface-low);
   padding: 12px var(--spacing-md);
+  font-family: var(--font-mono);
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.7rem;
-  letter-spacing: 1px;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(7, 54, 66, 0.2);
   position: sticky;
   top: 0;
   z-index: 1;
+  /* box-shadow acts as an opaque bottom edge so scrolling rows can't
+     bleed through the transparent gaps between cells. */
+  box-shadow: inset 0 -1px 0 rgba(7, 54, 66, 0.2);
 }
 
 .docs-table td {
   padding: 12px var(--spacing-md);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(7, 54, 66, 0.1);
   vertical-align: middle;
 }
 
@@ -766,33 +777,33 @@ function getFileIcon(filename) {
 }
 
 .doc-row:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(7, 54, 66, 0.04);
 }
 
 .format-badge {
   padding: 3px 6px;
-  border-radius: 4px;
-  font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
 }
 
 .format-badge.pdf {
-  background-color: rgba(255, 51, 102, 0.15);
+  background-color: rgba(220, 50, 47, 0.1);
   color: var(--accent-error);
-  border: 1px solid rgba(255, 51, 102, 0.3);
+  border: 1px solid rgba(220, 50, 47, 0.3);
 }
 
 .format-badge.txt {
-  background-color: rgba(0, 240, 255, 0.1);
+  background-color: rgba(7, 54, 66, 0.08);
   color: var(--accent-primary);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(7, 54, 66, 0.25);
 }
 
 .format-badge.json {
-  background-color: rgba(255, 184, 0, 0.1);
+  background-color: rgba(181, 137, 0, 0.1);
   color: var(--accent-warning);
-  border: 1px solid rgba(255, 184, 0, 0.3);
+  border: 1px solid rgba(181, 137, 0, 0.3);
 }
 
 .title-cell {
@@ -808,6 +819,7 @@ function getFileIcon(filename) {
 }
 
 .doc-filename {
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--text-muted);
   overflow: hidden;
@@ -817,12 +829,16 @@ function getFileIcon(filename) {
 }
 
 .date-cell {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
 .chunk-count {
   font-family: var(--font-mono);
+  color: var(--accent-primary);
+  font-weight: 700;
 }
 
 /* Status Badges */
@@ -830,8 +846,9 @@ function getFileIcon(filename) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .status-badge.success {
@@ -839,7 +856,7 @@ function getFileIcon(filename) {
 }
 
 .status-badge.processing {
-  color: var(--accent-primary);
+  color: var(--accent-warning);
 }
 
 .status-badge.error {
@@ -853,16 +870,15 @@ function getFileIcon(filename) {
   height: 6px;
   background-color: var(--accent-success);
   border-radius: 50%;
-  box-shadow: 0 0 6px var(--accent-success);
   animation: pulseDot 1.5s infinite ease-in-out;
 }
 
 .spinner-dot {
   width: 8px;
   height: 8px;
-  border: 1.5px solid rgba(0, 240, 255, 0.2);
+  border: 1.5px solid rgba(181, 137, 0, 0.25);
   border-radius: 50%;
-  border-top-color: var(--accent-primary);
+  border-top-color: var(--accent-warning);
   animation: spin 0.8s infinite linear;
 }
 
@@ -892,8 +908,8 @@ function getFileIcon(filename) {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-panel);
+  border: 1px solid rgba(7, 54, 66, 0.25);
   transition: .3s;
 }
 
@@ -909,14 +925,13 @@ function getFileIcon(filename) {
 }
 
 input:checked + .slider {
-  background-color: rgba(0, 255, 136, 0.1);
-  border-color: var(--accent-success);
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
 input:checked + .slider:before {
   transform: translateX(14px);
-  background-color: var(--accent-success);
-  box-shadow: 0 0 6px var(--accent-success);
+  background-color: var(--bg-primary);
 }
 
 /* Actions */
@@ -926,7 +941,6 @@ input:checked + .slider:before {
   color: var(--text-dim);
   cursor: pointer;
   padding: 6px;
-  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -936,7 +950,7 @@ input:checked + .slider:before {
 .delete-btn:hover:not(:disabled) {
   color: var(--accent-error);
   border-color: var(--accent-error);
-  background-color: rgba(255, 51, 102, 0.05);
+  background-color: rgba(220, 50, 47, 0.06);
 }
 
 .delete-btn:disabled {
@@ -948,7 +962,7 @@ input:checked + .slider:before {
   display: inline-block;
   width: 12px;
   height: 12px;
-  border: 1.5px solid rgba(255, 51, 102, 0.2);
+  border: 1.5px solid rgba(220, 50, 47, 0.25);
   border-radius: 50%;
   border-top-color: var(--accent-error);
   animation: spin 0.8s infinite linear;

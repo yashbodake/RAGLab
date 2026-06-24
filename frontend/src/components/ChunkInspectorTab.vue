@@ -51,6 +51,26 @@ const { enhancedChunks } = useChunks();
   gap: var(--spacing-md);
 }
 
+/* Staggered fade-up cascade when chunks arrive (dealing-cards feel) */
+.chunks-container > * {
+  animation: chunkIn 0.4s ease both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+.chunks-container > :nth-child(1) { --i: 0; }
+.chunks-container > :nth-child(2) { --i: 1; }
+.chunks-container > :nth-child(3) { --i: 2; }
+.chunks-container > :nth-child(4) { --i: 3; }
+.chunks-container > :nth-child(5) { --i: 4; }
+.chunks-container > :nth-child(6) { --i: 5; }
+.chunks-container > :nth-child(7) { --i: 6; }
+.chunks-container > :nth-child(8) { --i: 7; }
+.chunks-container > :nth-child(n+9) { --i: 8; }
+
+@keyframes chunkIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .empty-chunks {
   font-size: 0.8rem;
   color: var(--text-dim);

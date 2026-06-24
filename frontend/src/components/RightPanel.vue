@@ -17,9 +17,11 @@ const { rightPanelTab } = useLayout();
   <div class="right-panel-content">
     <TabBar />
     <div class="panel-content">
-      <LogStreamTab v-if="rightPanelTab === 0" />
-      <ChunkInspectorTab v-if="rightPanelTab === 1" />
-      <ComparisonTab v-if="rightPanelTab === 2" />
+      <Transition name="tab-swap" mode="out-in">
+        <LogStreamTab v-if="rightPanelTab === 0" key="logs" />
+        <ChunkInspectorTab v-else-if="rightPanelTab === 1" key="chunks" />
+        <ComparisonTab v-else key="compare" />
+      </Transition>
     </div>
   </div>
 </template>
@@ -34,5 +36,15 @@ const { rightPanelTab } = useLayout();
 .panel-content {
   display: flex;
   flex-direction: column;
+}
+
+/* Quick cross-fade when switching inspector tabs */
+.tab-swap-enter-active,
+.tab-swap-leave-active {
+  transition: opacity 0.18s ease;
+}
+.tab-swap-enter-from,
+.tab-swap-leave-to {
+  opacity: 0;
 }
 </style>

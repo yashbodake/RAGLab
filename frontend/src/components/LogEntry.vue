@@ -40,6 +40,13 @@ const displayTime = computed(() => {
   gap: var(--spacing-sm);
   word-break: break-all;
   transition: background-color var(--transition-fast);
+  animation: logIn 0.35s ease both;
+}
+
+/* New log lines slide in from the left + fade — terminal-trace feel */
+@keyframes logIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .log-entry:hover {

@@ -132,10 +132,11 @@ watch(query, () => {
   color: #ffffff;
   border: none;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), transform var(--transition-fast);
 }
 .send-button .material-symbols-outlined { font-size: 20px; }
 .send-button:disabled { opacity: 0.25; cursor: not-allowed; }
+.send-button:not(:disabled):active { transform: scale(0.88); }
 .send-button.active:hover { background: var(--accent-secondary); }
 
 /* Meta row */
