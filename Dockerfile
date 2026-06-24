@@ -30,7 +30,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source
 COPY backend/ ./backend/
 
-# Copy data files
+# Copy data files (ensure they ship with the image for first-run seeding)
 COPY data/articles.json ./data/articles.json
 
 # Copy built frontend from stage 1
