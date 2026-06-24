@@ -38,10 +38,21 @@ function scrollToBottom() {
   scrollContainer.scrollTop = scrollContainer.scrollHeight;
 }
 
-watch(() => props.messages.length, scrollToBottom);
+// A NEW message (user question or assistant turn) should ALWAYS bring the
+// view to the bottom — the user just acted, so they expect to see the result.
+// This is intentionally separate from the guarded streaming scroll below.
+function scrollToBottomForced() {
+  if (!scrollContainer) scrollContainer = findScrollContainer();
+  if (!scrollContainer) return;
+  scrollContainer.scrollTop = scrollContainer.scrollHeight;
+}
+
+// New message added -> always follow it.
+watch(() => props.messages.length, scrollToBottomForced);
 
 // Watch the streaming content of the last message — this fires on every
-// reveal-tick update, keeping the view pinned to the typing head.
+// reveal-tick update. Here we DO respect the "near bottom" guard so we don't
+// yank the view away while the user scrolls up to read earlier content.
 watch(() => {
   if (props.messages.length === 0) return '';
   return props.messages[props.messages.length - 1].content;
@@ -49,7 +60,7 @@ watch(() => {
 
 onMounted(() => {
   scrollContainer = findScrollContainer();
-  scrollToBottom();
+  scrollToBottomForced();
 });
 </script>
 
