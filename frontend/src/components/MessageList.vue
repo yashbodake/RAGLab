@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, nextTick, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import MessageBubble from './MessageBubble.vue';
 
 const props = defineProps({
@@ -7,23 +7,50 @@ const props = defineProps({
 });
 
 const listRef = ref(null);
+let scrollContainer = null;
+
+// The scroll container is NOT .message-list (that just flows) — it's the
+// nearest scrollable ancestor (.chat-scroll in ChatArea). Find it once.
+function findScrollContainer() {
+  let el = listRef.value?.parentElement;
+  while (el) {
+    const style = getComputedStyle(el);
+    if (/(auto|scroll)/.test(style.overflowY)) {
+      return el;
+    }
+    el = el.parentElement;
+  }
+  return null;
+}
+
+// Only auto-scroll if the user is already near the bottom — so we don't
+// yank the view away while they're reading earlier content.
+function isNearBottom() {
+  if (!scrollContainer) return true;
+  const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+  return scrollHeight - scrollTop - clientHeight < 120;
+}
 
 function scrollToBottom() {
-  nextTick(() => {
-    if (listRef.value) {
-      listRef.value.scrollTop = listRef.value.scrollHeight;
-    }
-  });
+  if (!scrollContainer) scrollContainer = findScrollContainer();
+  if (!scrollContainer) return;
+  if (!isNearBottom()) return; // respect the user reading
+  scrollContainer.scrollTop = scrollContainer.scrollHeight;
 }
 
 watch(() => props.messages.length, scrollToBottom);
 
+// Watch the streaming content of the last message — this fires on every
+// reveal-tick update, keeping the view pinned to the typing head.
 watch(() => {
   if (props.messages.length === 0) return '';
   return props.messages[props.messages.length - 1].content;
 }, scrollToBottom);
 
-onMounted(scrollToBottom);
+onMounted(() => {
+  scrollContainer = findScrollContainer();
+  scrollToBottom();
+});
 </script>
 
 <template>

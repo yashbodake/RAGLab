@@ -62,8 +62,8 @@ export function useChat() {
     // Drain a few characters per tick at a steady cadence. Characters per tick
     // scales up slightly when the queue grows long, so a fast backend burst
     // doesn't make the reveal lag unreasonably behind.
-    const REVEAL_INTERVAL_MS = 16;   // ~60fps
-    const BASE_CHARS_PER_TICK = 2;
+    const REVEAL_INTERVAL_MS = 24;   // ~42fps — deliberate typing pace
+    const BASE_CHARS_PER_TICK = 1;
     const revealTimer = setInterval(() => {
       const idx = messages.value.findIndex(m => m.id === assistantMsgId);
       if (idx === -1) return;
@@ -79,7 +79,7 @@ export function useChat() {
       }
       // Reveal more chars when falling behind so we never lag far behind the
       // backend while still looking like deliberate typing.
-      const burst = queuedChars.length > 40 ? Math.ceil(queuedChars.length / 20) : BASE_CHARS_PER_TICK;
+      const burst = queuedChars.length > 60 ? Math.ceil(queuedChars.length / 30) : BASE_CHARS_PER_TICK;
       const chunk = queuedChars.slice(0, burst);
       queuedChars = queuedChars.slice(burst);
       messages.value[idx].content += chunk;
