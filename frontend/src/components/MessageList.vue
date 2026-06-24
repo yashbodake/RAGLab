@@ -74,7 +74,7 @@ onMounted(() => {
 .message-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-2xl);
   padding: var(--spacing-sm);
 }
 </style>

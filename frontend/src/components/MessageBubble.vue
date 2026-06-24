@@ -61,32 +61,92 @@ const parsedBlocks = computed(() => {
   const lines = props.content.split('\n');
   const result = [];
 
-  for (const line of lines) {
-    let type = 'paragraph';
-    let isOrdered = false;
-    let listNumber = '';
-    let lineContent = line;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
 
-    const headerMatch = line.match(/^(\s*)(#{1,6})\s+(.*)/);
-    if (headerMatch) {
-      type = 'header';
-      lineContent = headerMatch[3];
-    } else if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
-      type = 'list';
-      lineContent = line.trim().substring(2);
-    } else {
-      const orderedMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
-      if (orderedMatch) {
-        type = 'list';
-        isOrdered = true;
-        listNumber = orderedMatch[1];
-        lineContent = orderedMatch[2];
+    // ── Fenced code block (```) ──────────────────────────────────────
+    const fenceMatch = line.match(/^```(\w*)/);
+    if (fenceMatch) {
+      const lang = fenceMatch[1] || '';
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
       }
+      i++; // skip closing fence
+      result.push({ type: 'codeblock', lang, text: codeLines.join('\n') });
+      continue;
     }
 
-    const segments = parseInline(lineContent);
+    // ── Table (GFM): header row | separator row | body rows ──────────
+    // A table is detected when the current line has a pipe and the NEXT line
+    // is a separator (---|:--:|---:).
+    if (line.includes('|') && i + 1 < lines.length && /^\s*\|?[\s:|-]+\|?\s*$/.test(lines[i + 1]) && lines[i + 1].includes('-')) {
+      const parseRow = (rowLine) =>
+        rowLine.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim());
+      const headers = parseRow(line);
+      i += 2; // skip header + separator
+      const rows = [];
+      while (i < lines.length && lines[i].includes('|') && lines[i].trim() !== '') {
+        rows.push(parseRow(lines[i]));
+        i++;
+      }
+      result.push({ type: 'table', headers, rows });
+      continue;
+    }
 
-    result.push({ type, isOrdered, listNumber, segments });
+    // ── Horizontal rule (---, ***, ___) ──────────────────────────────
+    if (/^\s*([-*_])\1{2,}\s*$/.test(line)) {
+      result.push({ type: 'hr' });
+      i++;
+      continue;
+    }
+
+    // ── Blockquote (> ...) ───────────────────────────────────────────
+    if (/^\s*>\s?/.test(line)) {
+      const quoteLines = [];
+      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+        quoteLines.push(lines[i].replace(/^\s*>\s?/, ''));
+        i++;
+      }
+      result.push({ type: 'blockquote', segments: parseInline(quoteLines.join(' ')) });
+      continue;
+    }
+
+    // ── Header ───────────────────────────────────────────────────────
+    const headerMatch = line.match(/^(\s*)(#{1,6})\s+(.*)/);
+    if (headerMatch) {
+      result.push({ type: 'header', segments: parseInline(headerMatch[3]) });
+      i++;
+      continue;
+    }
+
+    // ── Unordered list (- or *) ──────────────────────────────────────
+    if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+      result.push({ type: 'list', isOrdered: false, segments: parseInline(line.trim().substring(2)) });
+      i++;
+      continue;
+    }
+
+    // ── Ordered list (1. 2.) ─────────────────────────────────────────
+    const orderedMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
+    if (orderedMatch) {
+      result.push({ type: 'list', isOrdered: true, listNumber: orderedMatch[1], segments: parseInline(orderedMatch[2]) });
+      i++;
+      continue;
+    }
+
+    // ── Empty line (paragraph break, no block) ───────────────────────
+    if (line.trim() === '') {
+      i++;
+      continue;
+    }
+
+    // ── Paragraph (default) ──────────────────────────────────────────
+    result.push({ type: 'paragraph', segments: parseInline(line) });
+    i++;
   }
   return result;
 });
@@ -152,6 +212,41 @@ const firstParagraphIndex = computed(() =>
               </template>
             </span>
           </div>
+
+          <!-- ── Fenced code block ─────────────────────────────────────── -->
+          <pre v-else-if="block.type === 'codeblock'" class="block-codeblock">
+            <span v-if="block.lang" class="code-lang label-caps">{{ block.lang }}</span>
+            <code>{{ block.text }}</code>
+          </pre>
+
+          <!-- ── Table ─────────────────────────────────────────────────── -->
+          <div v-else-if="block.type === 'table'" class="block-table-wrap">
+            <table class="block-table">
+              <thead>
+                <tr>
+                  <th v-for="(h, hIdx) in block.headers" :key="hIdx">{{ h }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, rIdx) in block.rows" :key="rIdx">
+                  <td v-for="(cell, cIdx) in row" :key="cIdx">{{ cell }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ── Blockquote ────────────────────────────────────────────── -->
+          <blockquote v-else-if="block.type === 'blockquote'" class="block-blockquote">
+            <template v-for="(seg, sIdx) in block.segments" :key="sIdx">
+              <code v-if="seg.type === 'code'" class="inline-code">{{ seg.text }}</code>
+              <strong v-else-if="seg.type === 'bold'" class="bold-text">{{ seg.text }}</strong>
+              <em v-else-if="seg.type === 'italic'" class="italic-text">{{ seg.text }}</em>
+              <span v-else>{{ seg.text }}</span>
+            </template>
+          </blockquote>
+
+          <!-- ── Horizontal rule ───────────────────────────────────────── -->
+          <hr v-else-if="block.type === 'hr'" class="block-hr" />
         </div>
 
         <!-- Inline typing cursor: sits at the end of the streaming text so it
@@ -267,6 +362,81 @@ const firstParagraphIndex = computed(() =>
   flex-shrink: 0;
 }
 .list-content { flex: 1; }
+
+/* ── Code block ─────────────────────────────────────────────────── */
+.block-codeblock {
+  position: relative;
+  background: var(--accent-primary);
+  color: #f5efdc;
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.block-codeblock code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+.code-lang {
+  display: block;
+  color: var(--accent-secondary);
+  margin-bottom: var(--spacing-xs);
+  font-size: 9px;
+}
+
+/* ── Table ───────────────────────────────────────────────────────── */
+.block-table-wrap {
+  overflow-x: auto;
+  margin: var(--spacing-sm) 0;
+}
+.block-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+}
+.block-table th,
+.block-table td {
+  border: 1px solid rgba(7, 54, 66, 0.2);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  text-align: left;
+  vertical-align: top;
+}
+.block-table th {
+  background: var(--bg-surface-low);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.block-table tr:nth-child(even) td {
+  background: rgba(7, 54, 66, 0.03);
+}
+
+/* ── Blockquote ──────────────────────────────────────────────────── */
+.block-blockquote {
+  border-left: 3px solid var(--accent-secondary);
+  padding: var(--spacing-xs) var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  color: var(--text-muted);
+  font-style: italic;
+  background: rgba(203, 75, 22, 0.04);
+}
+
+/* ── Horizontal rule ─────────────────────────────────────────────── */
+.block-hr {
+  border: none;
+  border-top: 1px solid rgba(7, 54, 66, 0.2);
+  margin: var(--spacing-md) 0;
+}
 
 /* Inline formatting */
 .inline-code {
