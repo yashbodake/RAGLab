@@ -1,5 +1,6 @@
 <script setup>
 import { useConversations } from '../composables/useConversations';
+import { useChat } from '../composables/useChat';
 
 const {
   conversations,
@@ -8,6 +9,7 @@ const {
   deleteConversation,
   createConversation,
 } = useConversations();
+const { setActiveConversation, syncMessages } = useChat();
 
 function fmtTime(ts) {
   const d = new Date(ts);
@@ -18,11 +20,13 @@ function fmtTime(ts) {
 }
 
 function selectConv(id) {
-  loadConversation(id);
+  // setActiveConversation loads it AND syncs the chat's messages ref.
+  setActiveConversation(id);
 }
 
 function newChat() {
   createConversation();
+  syncMessages();
 }
 </script>
 

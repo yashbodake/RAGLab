@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useFeatures } from './useFeatures';
 import { useMetrics } from './useMetrics';
 import { useLogs } from './useLogs';
@@ -7,6 +7,12 @@ import { useConversations } from './useConversations';
 
 const isStreaming = ref(false);
 const compareWithBaseline = ref(false);
+
+// Direct reactive ref of the active conversation's message array. We keep this
+// in sync with the conversation store manually (syncMessages) so the chat view
+// re-renders reliably when messages are added or content streams in — a plain
+// ref avoids any computed/indirection reactivity edge cases during streaming.
+const messages = ref([]);
 
 export function useChat() {
   const { getFeaturePayload } = useFeatures();
@@ -18,20 +24,29 @@ export function useChat() {
     activeConversation,
     activeId,
     ensureActive,
-    addStreamingMessage,
     loadConversation,
     persist,
   } = useConversations();
 
-  // messages is a computed view of the active conversation's messages, so the
-  // chat view stays reactive when the user switches conversations in history.
-  const messages = computed(() => activeConversation.value?.messages || []);
+  // Replace messages ref with the active conversation's message array (same
+  // array reference the conversation object holds, so mutations are visible
+  // through both paths).
+  function syncMessages() {
+    messages.value = activeConversation.value ? activeConversation.value.messages : [];
+  }
 
   function clearConversation() {
     isStreaming.value = false;
     clearLogs();
     clearChunks();
     resetMetrics();
+  }
+
+  // When the active conversation changes (user picks one in history), refresh
+  // the messages ref to point at it.
+  function setActiveConversation(id) {
+    loadConversation(id);
+    syncMessages();
   }
 
   async function sendQuery(queryText) {
@@ -44,6 +59,8 @@ export function useChat() {
 
     // Ensure we have an active conversation to append to.
     const conv = ensureActive();
+    // Point the messages ref at this conversation's array.
+    messages.value = conv.messages;
 
     // 1. Append User Message (persisted)
     const userMsg = {
@@ -226,6 +243,8 @@ export function useChat() {
     isStreaming,
     compareWithBaseline,
     sendQuery,
-    clearConversation
+    clearConversation,
+    setActiveConversation,
+    syncMessages,
   };
 }

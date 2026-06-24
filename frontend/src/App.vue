@@ -1,7 +1,8 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useLayout } from './composables/useLayout';
 import { useConversations } from './composables/useConversations';
+import { useChat } from './composables/useChat';
 import AppHeader from './components/AppHeader.vue';
 import SlideDrawer from './components/SlideDrawer.vue';
 import LeftSidebar from './components/LeftSidebar.vue';
@@ -12,16 +13,23 @@ import DocumentManager from './components/DocumentManager.vue';
 
 const { sidebarOpen, rightPanelOpen, historyOpen, toggleSidebar, toggleRightPanel, toggleHistory } = useLayout();
 const { activeConversation, createConversation } = useConversations();
+const { syncMessages } = useChat();
 
 const currentPage = ref('chat');
 
-// When switching to the chat view, ensure there's an active conversation so
-// the user can start typing immediately (history persists across page switches).
-watch(currentPage, (page) => {
-  if (page === 'chat' && !activeConversation.value) {
+// On first mount, ensure there's an active conversation and sync the chat's
+// messages ref to point at it (so the welcome screen / messages render).
+onMounted(() => {
+  if (!activeConversation.value) {
     createConversation();
   }
+  syncMessages();
 });
+
+function handleNewConversation() {
+  createConversation();
+  syncMessages();
+}
 </script>
 
 <template>
@@ -35,7 +43,7 @@ watch(currentPage, (page) => {
       @toggle-sidebar="toggleSidebar"
       @toggle-right-panel="toggleRightPanel"
       @toggle-history="toggleHistory"
-      @new-conversation="createConversation"
+      @new-conversation="handleNewConversation"
     />
 
     <!-- View swap: old view scales-down + fades out, new view scales-up + fades in -->
