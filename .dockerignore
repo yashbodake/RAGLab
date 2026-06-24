@@ -10,6 +10,7 @@ frontend/node_modules
 frontend/dist
 node_modules
 static/
+data/chroma_db
 data/chroma_db_test
+data/huggingface
 data/huggingface_test
-/data
