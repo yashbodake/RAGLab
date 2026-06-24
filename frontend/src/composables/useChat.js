@@ -122,6 +122,8 @@ export function useChat() {
           msg.isStreaming = false;
           isStreaming.value = false;
           persist();
+          // Once the answer is fully revealed, fetch follow-up suggestions.
+          fetchSuggestions(queryText, msg.content);
         }
         return;
       }
@@ -238,11 +240,57 @@ export function useChat() {
     }
   }
 
+  // Suggestions for the most recent answer (shown as follow-up chips).
+  const suggestions = ref([]);
+
+  async function fetchSuggestions(query, answer) {
+    if (!query || !answer) { suggestions.value = []; return; }
+    try {
+      const res = await fetch('/suggest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, answer }),
+      });
+      if (!res.ok) { suggestions.value = []; return; }
+      const data = await res.json();
+      suggestions.value = data.suggestions || [];
+    } catch (e) {
+      suggestions.value = [];
+    }
+  }
+
+  // Regenerate: remove the last assistant answer and re-run the pipeline on the
+  // last user question, preserving multi-turn history up to that point.
+  async function regenerate() {
+    if (isStreaming.value) return;
+    const conv = activeConversation.value;
+    if (!conv || conv.messages.length < 2) return;
+
+    // Find the last user message and the assistant message after it.
+    let lastUserIdx = -1;
+    for (let i = conv.messages.length - 1; i >= 0; i--) {
+      if (conv.messages[i].role === 'user') { lastUserIdx = i; break; }
+    }
+    if (lastUserIdx === -1) return;
+
+    const lastQuery = conv.messages[lastUserIdx].content;
+    // Drop everything from the assistant answer onward.
+    conv.messages.splice(lastUserIdx + 1);
+    persist();
+    suggestions.value = [];
+
+    // Re-send the same query (history is rebuilt inside sendQuery from conv).
+    await sendQuery(lastQuery);
+  }
+
   return {
     messages,
     isStreaming,
     compareWithBaseline,
+    suggestions,
     sendQuery,
+    regenerate,
+    fetchSuggestions,
     clearConversation,
     setActiveConversation,
     syncMessages,

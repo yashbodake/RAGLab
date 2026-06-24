@@ -1,4 +1,6 @@
 <script setup>
+import { useTheme } from '../composables/useTheme';
+
 defineProps({
   sidebarOpen: Boolean,
   rightPanelOpen: Boolean,
@@ -7,6 +9,8 @@ defineProps({
 });
 
 defineEmits(['toggle-sidebar', 'toggle-right-panel', 'toggle-history', 'new-conversation', 'update:currentPage']);
+
+const { theme, toggleTheme } = useTheme();
 </script>
 
 <template>
@@ -64,8 +68,16 @@ defineEmits(['toggle-sidebar', 'toggle-right-panel', 'toggle-history', 'new-conv
       </button>
     </nav>
 
-    <!-- Right: inspector drawer trigger (chat only) -->
+    <!-- Right: theme toggle + inspector drawer trigger -->
     <div class="header-right">
+      <button
+        class="drawer-trigger theme-toggle"
+        @click="toggleTheme"
+        :aria-label="theme === 'dark' ? 'Switch to light' : 'Switch to dark'"
+        :title="theme === 'dark' ? 'Light theme' : 'Dark theme'"
+      >
+        <span class="material-symbols-outlined">{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
+      </button>
       <button
         v-if="currentPage === 'chat'"
         class="drawer-trigger"

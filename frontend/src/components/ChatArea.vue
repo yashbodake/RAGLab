@@ -6,13 +6,29 @@ import MessageList from './MessageList.vue';
 import SkeletonLoader from './SkeletonLoader.vue';
 import ChatInput from './ChatInput.vue';
 
-const { messages, isStreaming, sendQuery } = useChat();
+const {
+  messages,
+  isStreaming,
+  suggestions,
+  sendQuery,
+  regenerate,
+} = useChat();
 const { features, toggleFeature } = useFeatures();
 
 const showSkeleton = computed(() => {
   if (isStreaming.value) return false;
   const lastMsg = messages.value[messages.value.length - 1];
   return lastMsg && lastMsg.role === 'assistant' && !lastMsg.content;
+});
+
+// Can regenerate only when not streaming and the last turn is a finished
+// assistant answer (there's a prior user message to re-run).
+const canRegenerate = computed(() => {
+  if (isStreaming.value) return false;
+  const n = messages.value.length;
+  return n >= 2
+    && messages.value[n - 1].role === 'assistant'
+    && messages.value[n - 2].role === 'user';
 });
 
 // Feature grid is collapsed by default so the welcome screen stays clean —
@@ -79,6 +95,32 @@ const featureChips = [
         </section>
 
         <MessageList :messages="messages" />
+
+        <!-- Action row: regenerate + follow-up suggestions -->
+        <div v-if="messages.length > 0 && !isStreaming" class="action-row">
+          <button
+            v-if="canRegenerate"
+            class="action-btn"
+            @click="regenerate"
+          >
+            <span class="material-symbols-outlined">refresh</span>
+            <span>REGENERATE</span>
+          </button>
+
+          <div v-if="suggestions.length > 0" class="suggestions">
+            <span class="suggestions-label label-caps">FOLLOW-UP</span>
+            <button
+              v-for="(s, i) in suggestions"
+              :key="i"
+              class="suggestion-chip"
+              @click="sendQuery(s)"
+            >
+              <span class="material-symbols-outlined">arrow_forward</span>
+              <span>{{ s }}</span>
+            </button>
+          </div>
+        </div>
+
         <SkeletonLoader v-if="showSkeleton" />
       </div>
     </div>
@@ -257,6 +299,74 @@ const featureChips = [
 }
 .chip-state.on {
   color: var(--accent-secondary);
+}
+
+/* ── Action row: regenerate + follow-up suggestions ──────────────── */
+.action-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.action-btn {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid rgba(7, 54, 66, 0.2);
+  color: var(--text-muted);
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.action-btn:hover {
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+.action-btn .material-symbols-outlined { font-size: 16px; }
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  border-top: 1px dashed rgba(7, 54, 66, 0.15);
+  padding-top: var(--spacing-md);
+}
+.suggestions-label {
+  color: var(--text-dim);
+  font-size: 10px;
+  margin-bottom: var(--spacing-xs);
+}
+.suggestion-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid rgba(7, 54, 66, 0.12);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.suggestion-chip:hover {
+  border-color: var(--accent-secondary);
+  background: rgba(203, 75, 22, 0.04);
+}
+.suggestion-chip .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--accent-secondary);
+  flex-shrink: 0;
 }
 
 /* ── Mobile: tighter padding, less room reserved for the dock ────── */

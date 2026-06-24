@@ -10,40 +10,40 @@
     "chunk_count": 255
   },
   {
-    "id": "art_upload_37e6cda8",
+    "id": "art_upload_ca6545cc",
     "filename": "switch_s500.txt",
     "title": "switch s500",
-    "upload_time": "2026-06-24T17:12:39.986179Z",
+    "upload_time": "2026-06-24T17:50:23.508523Z",
     "status": "success",
     "active": true,
     "error_message": null,
     "chunk_count": 1
   },
   {
-    "id": "art_upload_2c09a3e8",
+    "id": "art_upload_9d8c0b6d",
     "filename": "generator_warning.json",
     "title": "generator warning",
-    "upload_time": "2026-06-24T17:12:40.999817Z",
+    "upload_time": "2026-06-24T17:50:24.451146Z",
     "status": "success",
     "active": true,
     "error_message": null,
     "chunk_count": 1
   },
   {
-    "id": "art_upload_9d95fb9a",
+    "id": "art_upload_a5666701",
     "filename": "calibration_proc.pdf",
     "title": "calibration proc",
-    "upload_time": "2026-06-24T17:12:44.352353Z",
+    "upload_time": "2026-06-24T17:50:26.423049Z",
     "status": "success",
     "active": true,
     "error_message": null,
     "chunk_count": 1
   },
   {
-    "id": "art_upload_8ab41c6e",
+    "id": "art_upload_eaf072e0",
     "filename": "bad.json",
     "title": "bad",
-    "upload_time": "2026-06-24T17:12:45.291703Z",
+    "upload_time": "2026-06-24T17:50:27.023349Z",
     "status": "failed",
     "active": true,
     "error_message": "Invalid JSON file format",

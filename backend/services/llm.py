@@ -69,6 +69,40 @@ class LLMClient:
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
+    async def suggest_followups(self, query: str, answer: str) -> List[str]:
+        """
+        Generate 3 concise follow-up questions based on the user's query and
+        the assistant's answer. Non-streaming (small, fast call).
+        """
+        prompt = (
+            "Based on this Q&A, suggest exactly 3 short follow-up questions the user "
+            "might ask next. Return ONLY the questions, one per line, numbered 1-3. "
+            "Do not include any other text.\n\n"
+            f"Question: {query}\n\nAnswer: {answer[:1200]}"
+        )
+        resp = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You generate concise follow-up questions."},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=160,
+            temperature=0.5,
+            stream=False,
+        )
+        raw = resp.choices[0].message.content or ""
+        # Parse numbered lines, strip the "1." prefixes, cap at 3.
+        lines = []
+        for line in raw.strip().split("\n"):
+            clean = line.strip()
+            if not clean:
+                continue
+            # Remove leading "1.", "1)", "1 -" etc.
+            clean = clean.lstrip("0123456789.").strip(") ").strip(" -").strip()
+            if clean:
+                lines.append(clean)
+        return lines[:3]
+
 def build_user_prompt(
     query: str,
     chunks: List[ChunkResult],

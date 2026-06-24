@@ -258,6 +258,24 @@ async def query_endpoint(request: Request, query_request: QueryRequest):
     return StreamingResponse(sse_generator(), media_type="text/event-stream")
 
 
+@router.post("/suggest")
+@limiter.limit("10/minute")
+async def suggest_endpoint(request: Request, payload: dict):
+    """Generate follow-up question suggestions from a Q&A pair."""
+    query = payload.get("query", "").strip()
+    answer = payload.get("answer", "").strip()
+    if not query or not answer:
+        raise HTTPException(status_code=400, detail="query and answer are required")
+
+    llm_client = request.app.state.llm_client
+    try:
+        suggestions = await llm_client.suggest_followups(query, answer)
+        return {"suggestions": suggestions}
+    except Exception as e:
+        logger.error(f"Suggest failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to generate suggestions")
+
+
 @router.post("/upload")
 async def upload_document(
     request: Request,

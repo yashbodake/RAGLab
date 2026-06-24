@@ -57,6 +57,73 @@
   --header-height: 72px;
 }
 
+/* ── Dark theme override (data-theme="dark" on <html>) ───────────── */
+/* Toggled by useTheme. Restores a neon-on-dark look using the same token
+   names so every component re-themes automatically. */
+[data-theme="dark"] {
+  --bg-primary: #0B0F19;
+  --bg-secondary: #131a2b;
+  --bg-panel: transparent;
+  --bg-panel-hover: rgba(0, 240, 255, 0.06);
+  --bg-surface-lowest: #0B0F19;
+  --bg-surface-low: #131a2b;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(0, 240, 255, 0.4);
+
+  --accent-primary: #00F0FF;
+  --accent-secondary: #FF007F;
+  --accent-success: #00FF88;
+  --accent-warning: #FFB800;
+  --accent-error: #FF3366;
+
+  --text-primary: #E0E0E0;
+  --text-muted: #A0A0A0;
+  --text-dim: #606880;
+
+  --ms-border: 1px solid rgba(255, 255, 255, 0.1);
+  --ms-bg: transparent;
+  --ms-shadow: 6px 6px 0 0 rgba(0, 240, 255, 0.4);
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] html {
+  background-color: #0B0F19;
+  color: #E0E0E0;
+}
+[data-theme="dark"] .app-header {
+  background: rgba(11, 15, 25, 0.9);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .input-frame {
+  background: #131a2b;
+  border-color: var(--accent-primary);
+  box-shadow: 6px 6px 0 0 var(--accent-primary);
+}
+[data-theme="dark"] .input-textarea {
+  color: #fff;
+}
+[data-theme="dark"] .user-card {
+  background: rgba(255, 0, 127, 0.06);
+  border-color: rgba(255, 0, 127, 0.2);
+}
+[data-theme="dark"] .user-label {
+  background: #0B0F19;
+  color: rgba(0, 240, 255, 0.6);
+}
+[data-theme="dark"] .user-text {
+  color: #E0E0E0;
+}
+[data-theme="dark"] .synthesis-body,
+[data-theme="dark"] .block-paragraph {
+  color: #E0E0E0;
+}
+[data-theme="dark"] .drawer-panel {
+  background: #0B0F19;
+}
+[data-theme="dark"] .drawer-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
 /* Base resets */
 * {
   box-sizing: border-box;
