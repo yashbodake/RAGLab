@@ -70,6 +70,7 @@ html, body {
   font-family: var(--font-body);
   overflow: hidden;
   height: 100vh;
+  height: 100dvh;   /* dynamic viewport height — accounts for mobile URL bar */
   width: 100vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -173,12 +174,14 @@ body::after {
   display: grid;
   grid-template-rows: var(--header-height) 1fr;
   height: 100vh;
+  height: 100dvh;   /* dynamic viewport height — accounts for mobile URL bar */
   width: 100vw;
 }
 
 .manuscript-layout {
   position: relative;
   height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   overflow: hidden;
 }
 

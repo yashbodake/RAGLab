@@ -12,7 +12,7 @@ defineEmits(['toggle-sidebar', 'toggle-right-panel', 'update:currentPage']);
   <header class="app-header">
     <!-- Left: wordmark + features drawer trigger (chat only) -->
     <div class="header-left">
-      <span class="wordmark">AETHER_ARCHIVE</span>
+      <span class="wordmark">RAGLAB</span>
       <div class="divider" v-if="currentPage === 'chat'"></div>
       <button
         v-if="currentPage === 'chat'"

@@ -168,11 +168,11 @@ const firstParagraphIndex = computed(() =>
       </div>
     </template>
 
-    <!-- ── ASSISTANT: Aether synthesis ─────────────────────────────── -->
+    <!-- ── ASSISTANT: RAGLab synthesis ─────────────────────────────── -->
     <template v-else>
       <div class="synthesis-head">
         <span class="material-symbols-outlined synthesis-icon" :class="{ 'fade-pulse': isStreaming }">auto_awesome</span>
-        <span class="synthesis-label label-caps">{{ isStreaming && !content ? 'AETHER_SYNTHESIS_THINKING' : 'AETHER_SYNTHESIS' }}</span>
+        <span class="synthesis-label label-caps">{{ isStreaming && !content ? 'RAGLAB_SYNTHESIS_THINKING' : 'RAGLAB_SYNTHESIS' }}</span>
       </div>
 
       <div class="synthesis-body">

@@ -20,7 +20,7 @@ const showSkeleton = computed(() => {
       <div class="chat-canvas">
         <!-- State-zero welcome (only before first query) -->
         <section class="state-zero" v-if="messages.length === 0">
-          <h1 class="welcome-headline">Aether Archive_</h1>
+          <h1 class="welcome-headline">RAGLab_</h1>
           <p class="welcome-body">
             Enter your query into the manuscript terminal. Your inquiry will be
             retrieved, ranked, and synthesized across the industrial knowledge base.

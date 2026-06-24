@@ -62,6 +62,7 @@ const currentPage = ref('chat');
 .manuscript-layout {
   position: relative;
   height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   overflow: hidden;
   background-color: var(--bg-primary);
 }

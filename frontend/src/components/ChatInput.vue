@@ -41,7 +41,7 @@ watch(query, () => {
       <textarea
         ref="textareaRef"
         v-model="query"
-        placeholder="Inquire the Aether Archive..."
+        placeholder="Inquire the RAGLab..."
         rows="1"
         class="input-textarea"
         :disabled="isStreaming"
