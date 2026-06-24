@@ -37,19 +37,29 @@ class LLMClient:
         user_prompt: str,
         max_tokens: int = 1024,
         temperature: float = 0.3,
+        history: list = None,
     ) -> AsyncGenerator[str, None]:
         """
         Stream completion tokens from Cerebras.
 
+        Args:
+            history: Optional prior conversation turns as [{"role","content"}] dicts.
+                     When provided, they're inserted between system + user prompts so
+                     the model has multi-turn context.
+
         Yields:
             Individual text tokens/fragments as they arrive.
         """
+        messages = [{"role": "system", "content": system_prompt}]
+        if history:
+            # Cap to last 6 turns to stay within token budget on the free tier.
+            for turn in history[-6:]:
+                messages.append({"role": turn.get("role", "user"), "content": turn.get("content", "")})
+        messages.append({"role": "user", "content": user_prompt})
+
         stream = await self.client.chat.completions.create(
             model=self.model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
+            messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
             stream=True,

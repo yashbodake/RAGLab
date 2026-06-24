@@ -1,10 +1,10 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useFeatures } from './useFeatures';
 import { useMetrics } from './useMetrics';
 import { useLogs } from './useLogs';
 import { useChunks } from './useChunks';
+import { useConversations } from './useConversations';
 
-const messages = ref([]);
 const isStreaming = ref(false);
 const compareWithBaseline = ref(false);
 
@@ -13,9 +13,21 @@ export function useChat() {
   const { updateMetrics, updateBaseline, resetMetrics } = useMetrics();
   const { appendLogs, clearLogs } = useLogs();
   const { setChunks, clearChunks } = useChunks();
+  const {
+    conversations,
+    activeConversation,
+    activeId,
+    ensureActive,
+    addStreamingMessage,
+    loadConversation,
+    persist,
+  } = useConversations();
+
+  // messages is a computed view of the active conversation's messages, so the
+  // chat view stays reactive when the user switches conversations in history.
+  const messages = computed(() => activeConversation.value?.messages || []);
 
   function clearConversation() {
-    messages.value = [];
     isStreaming.value = false;
     clearLogs();
     clearChunks();
@@ -30,26 +42,41 @@ export function useChat() {
     clearChunks();
     resetMetrics();
 
-    // 1. Append User Message
-    const userMsgId = Date.now().toString() + '-user';
-    messages.value.push({
-      id: userMsgId,
+    // Ensure we have an active conversation to append to.
+    const conv = ensureActive();
+
+    // 1. Append User Message (persisted)
+    const userMsg = {
+      id: Date.now().toString() + '-user',
       role: 'user',
       content: queryText,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+      isStreaming: false,
+    };
+    conv.messages.push(userMsg);
+    if (conv.title === 'New Conversation') {
+      conv.title = queryText.slice(0, 40) + (queryText.length > 40 ? '…' : '');
+    }
 
-    // 2. Append Placeholder Bot Message
+    // Build multi-turn history from prior turns (everything before this query).
+    // Skip streaming/placeholder messages and cap to last 6 turns for token budget.
+    const history = conv.messages
+      .filter(m => m.id !== userMsg.id && m.content && !m.isStreaming)
+      .slice(-6)
+      .map(m => ({ role: m.role, content: m.content }));
+
+    // 2. Append Placeholder Assistant Message (streaming)
     const assistantMsgId = Date.now().toString() + '-assistant';
-    const assistantMsg = ref({
+    const assistantMsg = {
       id: assistantMsgId,
       role: 'assistant',
       content: '',
       sources: null,
       timestamp: new Date().toISOString(),
-      isStreaming: true
-    });
-    messages.value.push(assistantMsg.value);
+      isStreaming: true,
+    };
+    conv.messages.push(assistantMsg);
+    persist();
 
     isStreaming.value = true;
 
@@ -59,21 +86,25 @@ export function useChat() {
     let queuedChars = '';
     let revealDone = false;
 
+    // Helper to find the live assistant message object in the active conv.
+    const findAssistant = () => conv.messages.find(m => m.id === assistantMsgId);
+
     // Drain a few characters per tick at a steady cadence. Characters per tick
     // scales up slightly when the queue grows long, so a fast backend burst
     // doesn't make the reveal lag unreasonably behind.
     const REVEAL_INTERVAL_MS = 24;   // ~42fps — deliberate typing pace
     const BASE_CHARS_PER_TICK = 1;
     const revealTimer = setInterval(() => {
-      const idx = messages.value.findIndex(m => m.id === assistantMsgId);
-      if (idx === -1) return;
+      const msg = findAssistant();
+      if (!msg) return;
       if (queuedChars.length === 0) {
         // Queue empty — if the stream already finished, complete the reveal:
         // stop the timer and flip isStreaming off (cursor stops blinking).
         if (revealDone) {
           clearInterval(revealTimer);
-          messages.value[idx].isStreaming = false;
+          msg.isStreaming = false;
           isStreaming.value = false;
+          persist();
         }
         return;
       }
@@ -82,7 +113,7 @@ export function useChat() {
       const burst = queuedChars.length > 60 ? Math.ceil(queuedChars.length / 30) : BASE_CHARS_PER_TICK;
       const chunk = queuedChars.slice(0, burst);
       queuedChars = queuedChars.slice(burst);
-      messages.value[idx].content += chunk;
+      msg.content += chunk;
     }, REVEAL_INTERVAL_MS);
 
     try {
@@ -95,7 +126,8 @@ export function useChat() {
         body: JSON.stringify({
           query: queryText,
           features: getFeaturePayload(),
-          compare_with_baseline: compareWithBaseline.value
+          compare_with_baseline: compareWithBaseline.value,
+          history,   // multi-turn context
         })
       });
 
@@ -139,20 +171,16 @@ export function useChat() {
             if (eventType === 'classification') {
               // Store or log query classification metadata
             } else if (eventType === 'sources') {
-              // Find the assistant message in array and update it
-              const idx = messages.value.findIndex(m => m.id === assistantMsgId);
-              if (idx !== -1) {
-                messages.value[idx].sources = data.chunks;
-              }
+              const msg = findAssistant();
+              if (msg) msg.sources = data.chunks;
               setChunks(data.chunks, false);
             } else if (eventType === 'baseline_sources') {
               setChunks(data.chunks, true);
             } else if (eventType === 'token') {
-              const idx = messages.value.findIndex(m => m.id === assistantMsgId);
-              if (idx !== -1) {
+              const msg = findAssistant();
+              if (msg) {
                 // Queue tokens for smooth typewriter reveal instead of dumping
                 // each SSE chunk instantly (which reads as "appears all at once").
-                // The reveal loop below drains queuedChars at a natural cadence.
                 queuedChars += data.text;
               }
             } else if (eventType === 'metrics') {
@@ -176,13 +204,14 @@ export function useChat() {
     } catch (err) {
       console.error('SSE Stream error:', err);
       clearInterval(revealTimer);
-      const idx = messages.value.findIndex(m => m.id === assistantMsgId);
-      if (idx !== -1) {
+      const msg = findAssistant();
+      if (msg) {
         // Flush whatever was queued so the error appears after typed text.
-        messages.value[idx].content += queuedChars + `\n\nSystem Error: ${err.message || 'Failed to complete RAG query pipeline.'}`;
+        msg.content += queuedChars + `\n\nSystem Error: ${err.message || 'Failed to complete RAG query pipeline.'}`;
         queuedChars = '';
-        messages.value[idx].isStreaming = false;
+        msg.isStreaming = false;
         isStreaming.value = false;
+        persist();
       }
     } finally {
       // Mark the reveal eligible to complete. The revealTimer owns the final

@@ -167,10 +167,13 @@ async def query_endpoint(request: Request, query_request: QueryRequest):
             # 5. Token Generation (LLM)
             from backend.services.llm import SYSTEM_PROMPT, build_user_prompt
             user_prompt = build_user_prompt(query_request.query, chunks, clf)
-            
+
             gen_start = time.monotonic()
             tokens_generated = 0
-            
+
+            if query_request.history:
+                log_buffer.append("llm", f"Including {len(query_request.history)} prior turn(s) for multi-turn context.", "info")
+
             log_buffer.append("llm", "Initiating Cerebras streaming completion...", "info")
             
             try:
@@ -179,7 +182,8 @@ async def query_endpoint(request: Request, query_request: QueryRequest):
                     system_prompt=SYSTEM_PROMPT,
                     user_prompt=user_prompt,
                     max_tokens=settings.llm_max_tokens,
-                    temperature=settings.llm_temperature
+                    temperature=settings.llm_temperature,
+                    history=[t.model_dump() for t in query_request.history]
                 )
                 
                 async for token in stream:

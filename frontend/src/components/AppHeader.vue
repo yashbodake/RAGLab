@@ -2,27 +2,46 @@
 defineProps({
   sidebarOpen: Boolean,
   rightPanelOpen: Boolean,
+  historyOpen: Boolean,
   currentPage: String
 });
 
-defineEmits(['toggle-sidebar', 'toggle-right-panel', 'update:currentPage']);
+defineEmits(['toggle-sidebar', 'toggle-right-panel', 'toggle-history', 'new-conversation', 'update:currentPage']);
 </script>
 
 <template>
   <header class="app-header">
-    <!-- Left: wordmark + features drawer trigger (chat only) -->
+    <!-- Left: wordmark + history/config triggers (chat only) -->
     <div class="header-left">
       <span class="wordmark">RAGLAB</span>
-      <div class="divider" v-if="currentPage === 'chat'"></div>
-      <button
-        v-if="currentPage === 'chat'"
-        class="drawer-trigger"
-        :class="{ active: sidebarOpen }"
-        @click="$emit('toggle-sidebar')"
-      >
-        <span class="material-symbols-outlined tune-icon">tune</span>
-        <span class="trigger-label">CONFIG</span>
-      </button>
+      <template v-if="currentPage === 'chat'">
+        <div class="divider"></div>
+        <button
+          class="drawer-trigger"
+          :class="{ active: historyOpen }"
+          @click="$emit('toggle-history')"
+          aria-label="Conversation history"
+        >
+          <span class="material-symbols-outlined">history</span>
+          <span class="trigger-label">HISTORY</span>
+        </button>
+        <button
+          class="drawer-trigger"
+          :class="{ active: sidebarOpen }"
+          @click="$emit('toggle-sidebar')"
+          aria-label="Config"
+        >
+          <span class="material-symbols-outlined tune-icon">tune</span>
+          <span class="trigger-label">CONFIG</span>
+        </button>
+        <button
+          class="drawer-trigger new-chat"
+          @click="$emit('new-conversation')"
+          aria-label="New conversation"
+        >
+          <span class="material-symbols-outlined">edit_square</span>
+        </button>
+      </template>
     </div>
 
     <!-- Center: nav tabs -->
@@ -159,6 +178,16 @@ defineEmits(['toggle-sidebar', 'toggle-right-panel', 'update:currentPage']);
   color: var(--bg-primary);
   background: var(--accent-primary);
   border-color: var(--accent-primary);
+}
+
+/* New-conversation: terracotta accent trigger */
+.drawer-trigger.new-chat {
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+.drawer-trigger.new-chat:hover {
+  background: var(--accent-secondary);
+  color: var(--bg-primary);
 }
 
 /* ── Mobile: collapse to icon-only ──────────────────────────────── */

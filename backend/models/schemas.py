@@ -11,11 +11,17 @@ class FeatureFlags(BaseModel):
     hnsw: bool = False
     stream_sources: bool = False
 
+class ChatTurn(BaseModel):
+    """A single prior conversation turn for multi-turn context."""
+    role: Literal["user", "assistant"]
+    content: str
+
 class QueryRequest(BaseModel):
     """Query API request schema."""
     query: str = Field(..., min_length=1, max_length=2000)
     features: FeatureFlags = FeatureFlags()
     compare_with_baseline: bool = False
+    history: List[ChatTurn] = Field(default_factory=list)
 
 class EmbedRequest(BaseModel):
     """Embedding API request schema."""

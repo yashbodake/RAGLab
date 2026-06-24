@@ -4,6 +4,7 @@ import { ref } from 'vue';
 const rightPanelTab = ref(0);            // 0 = Log Stream, 1 = Chunk Inspector, 2 = Comparison
 const rightPanelOpen = ref(false);       // right drawer (inspect) — default closed in single-column layout
 const sidebarOpen = ref(false);          // left drawer (features) — default closed
+const historyOpen = ref(false);          // left drawer (conversation history) — default closed
 const activeInspectChunkId = ref(null);
 
 export function useLayout() {
@@ -12,7 +13,15 @@ export function useLayout() {
   }
 
   function toggleSidebar() {
+    // Opening features closes history so two left drawers don't overlap.
+    historyOpen.value = false;
     sidebarOpen.value = !sidebarOpen.value;
+  }
+
+  function toggleHistory() {
+    // Opening history closes features so two left drawers don't overlap.
+    sidebarOpen.value = false;
+    historyOpen.value = !historyOpen.value;
   }
 
   function setRightPanelTab(tab) {
@@ -42,11 +51,14 @@ export function useLayout() {
     rightPanelTab,
     rightPanelOpen,
     sidebarOpen,
+    historyOpen,
     activeInspectChunkId,
     // actions
     toggleRightPanel,
     toggleSidebar,
+    toggleHistory,
     setRightPanelTab,
     inspectChunk,
   };
 }
+

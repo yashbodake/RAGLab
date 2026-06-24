@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import SourcesAccordion from './SourcesAccordion.vue';
 
 const props = defineProps({
@@ -8,6 +8,29 @@ const props = defineProps({
   sources: Array,
   isStreaming: Boolean
 });
+
+// Copy-to-clipboard for code blocks. Tracks which block is showing the
+// "copied" confirmation so multiple blocks don't all flash at once.
+const copiedBlockIndex = ref(-1);
+async function copyCode(text, index) {
+  try {
+    await navigator.clipboard.writeText(text);
+    copiedBlockIndex.value = index;
+    setTimeout(() => { if (copiedBlockIndex.value === index) copiedBlockIndex.value = -1; }, 1500);
+  } catch (e) {
+    // Fallback for non-secure contexts (HF HTTP): use a hidden textarea
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    document.body.removeChild(ta);
+    copiedBlockIndex.value = index;
+    setTimeout(() => { if (copiedBlockIndex.value === index) copiedBlockIndex.value = -1; }, 1500);
+  }
+}
 
 function parseInline(text) {
   const segments = [];
@@ -214,10 +237,21 @@ const firstParagraphIndex = computed(() =>
           </div>
 
           <!-- ── Fenced code block ─────────────────────────────────────── -->
-          <pre v-else-if="block.type === 'codeblock'" class="block-codeblock">
-            <span v-if="block.lang" class="code-lang label-caps">{{ block.lang }}</span>
-            <code>{{ block.text }}</code>
-          </pre>
+          <div v-else-if="block.type === 'codeblock'" class="codeblock-wrap">
+            <button
+              class="code-copy-btn"
+              :class="{ copied: copiedBlockIndex === bIdx }"
+              @click="copyCode(block.text, bIdx)"
+              :aria-label="copiedBlockIndex === bIdx ? 'Copied' : 'Copy code'"
+            >
+              <span class="material-symbols-outlined">{{ copiedBlockIndex === bIdx ? 'check' : 'content_copy' }}</span>
+              <span class="copy-text">{{ copiedBlockIndex === bIdx ? 'COPIED' : 'COPY' }}</span>
+            </button>
+            <pre class="block-codeblock">
+              <span v-if="block.lang" class="code-lang label-caps">{{ block.lang }}</span>
+              <code>{{ block.text }}</code>
+            </pre>
+          </div>
 
           <!-- ── Table ─────────────────────────────────────────────────── -->
           <div v-else-if="block.type === 'table'" class="block-table-wrap">
@@ -364,12 +398,48 @@ const firstParagraphIndex = computed(() =>
 .list-content { flex: 1; }
 
 /* ── Code block ─────────────────────────────────────────────────── */
+.codeblock-wrap {
+  position: relative;
+  margin: var(--spacing-sm) 0;
+}
+.code-copy-btn {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(253, 246, 227, 0.12);
+  border: 1px solid rgba(253, 246, 227, 0.2);
+  color: rgba(253, 246, 227, 0.7);
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  transition: all var(--transition-fast);
+  z-index: 1;
+  opacity: 0;
+}
+.codeblock-wrap:hover .code-copy-btn { opacity: 1; }
+.code-copy-btn:hover {
+  background: rgba(253, 246, 227, 0.2);
+  color: var(--bg-primary);
+}
+.code-copy-btn.copied {
+  background: var(--accent-success);
+  border-color: var(--accent-success);
+  color: #fff;
+  opacity: 1;
+}
+.code-copy-btn .material-symbols-outlined { font-size: 14px; }
+
 .block-codeblock {
   position: relative;
   background: var(--accent-primary);
   color: #f5efdc;
   padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
-  margin: var(--spacing-sm) 0;
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: 0.82rem;
