@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, nextTick, onMounted } from 'vue';
 import MessageBubble from './MessageBubble.vue';
 
 const props = defineProps({
@@ -39,24 +39,28 @@ function scrollToBottom() {
 }
 
 // A NEW message (user question or assistant turn) should ALWAYS bring the
-// view to the bottom — the user just acted, so they expect to see the result.
-// This is intentionally separate from the guarded streaming scroll below.
+// view to the bottom. nextTick ensures the new message is rendered into the
+// DOM before we measure scrollHeight — without it, we'd scroll to the OLD
+// bottom (before the new bubble grew the content), doing nothing.
 function scrollToBottomForced() {
-  if (!scrollContainer) scrollContainer = findScrollContainer();
-  if (!scrollContainer) return;
-  scrollContainer.scrollTop = scrollContainer.scrollHeight;
+  nextTick(() => {
+    if (!scrollContainer) scrollContainer = findScrollContainer();
+    if (!scrollContainer) return;
+    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+  });
 }
 
-// New message added -> always follow it.
+// New message added -> always follow it (after DOM update).
 watch(() => props.messages.length, scrollToBottomForced);
 
-// Watch the streaming content of the last message — this fires on every
-// reveal-tick update. Here we DO respect the "near bottom" guard so we don't
-// yank the view away while the user scrolls up to read earlier content.
+// Streaming content of the last message — fires on every reveal-tick. Guard
+// with isNearBottom so we don't yank the view while reading history.
 watch(() => {
   if (props.messages.length === 0) return '';
   return props.messages[props.messages.length - 1].content;
-}, scrollToBottom);
+}, () => {
+  nextTick(() => scrollToBottom());
+});
 
 onMounted(() => {
   scrollContainer = findScrollContainer();
