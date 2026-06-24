@@ -139,6 +139,37 @@ watch(query, () => {
 .send-button:not(:disabled):active { transform: scale(0.88); }
 .send-button.active:hover { background: var(--accent-secondary); }
 
+/* ── Mobile: full-width dock, reduced shadow/padding ────────────── */
+@media (max-width: 600px) {
+  .input-dock {
+    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
+  }
+  .input-frame {
+    /* Smaller hard shadow so it doesn't overflow the viewport edge */
+    box-shadow: 4px 4px 0 0 rgba(7, 54, 66, 1);
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  .input-frame:focus-within {
+    box-shadow: 3px 3px 0 0 var(--accent-secondary);
+  }
+  .input-textarea {
+    font-size: 16px; /* 16px prevents iOS zoom-on-focus */
+    padding: 8px 0;
+  }
+  .send-button {
+    width: 36px;
+    height: 36px;
+  }
+  /* Stack the meta row: compare toggle above the hint, both centered */
+  .input-meta {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    align-items: flex-start;
+  }
+  .hint { display: none; }
+}
+
 /* Meta row */
 .input-meta {
   max-width: var(--canvas-max-width);

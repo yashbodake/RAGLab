@@ -160,4 +160,29 @@ defineEmits(['toggle-sidebar', 'toggle-right-panel', 'update:currentPage']);
   background: var(--accent-primary);
   border-color: var(--accent-primary);
 }
+
+/* ── Mobile: collapse to icon-only ──────────────────────────────── */
+@media (max-width: 600px) {
+  .app-header {
+    padding: 0 var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+  /* Hide the wordmark text, keep just the leading letter as a mark */
+  .wordmark {
+    font-size: 0;
+  }
+  .wordmark::first-letter {
+    font-size: 1.2rem;
+  }
+  .divider { display: none; }
+
+  /* Drop the text labels from nav tabs and drawer triggers — icons only */
+  .nav-tab span:not(.material-symbols-outlined),
+  .trigger-label {
+    display: none;
+  }
+  .nav-tab { padding: 8px; }
+  .drawer-trigger { padding: 8px; }
+  .header-left, .header-right { gap: var(--spacing-sm); }
+}
 </style>

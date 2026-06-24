@@ -246,3 +246,33 @@ body::after {
 .highlight-flash {
   animation: highlightFlash 1.5s ease-out;
 }
+
+/* ──────────────────────────────────────────────────────────────────
+   MOBILE / RESPONSIVE — tablet breakpoint and phone breakpoint.
+   Keeps the manuscript aesthetic but adapts spacing, fonts, and the
+   header to small screens.
+   ────────────────────────────────────────────────────────────────── */
+
+/* Tablet and smaller (< 900px) */
+@media (max-width: 900px) {
+  :root {
+    --canvas-max-width: 100%;
+    --header-height: 60px;
+    --spacing-2xl: 40px;
+  }
+}
+
+/* Phone (< 600px) */
+@media (max-width: 600px) {
+  :root {
+    --header-height: 56px;
+    --drawer-width: 100vw;
+  }
+
+  html, body {
+    /* Allow the page to scroll naturally on touch; the app manages its own
+       inner scroll containers, but body itself should not be locked. */
+    overflow: hidden;
+  }
+}
+

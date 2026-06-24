@@ -171,6 +171,26 @@ function onBackdropClick() {
   padding: var(--spacing-lg);
 }
 
+/* ── Mobile: tighter drawer padding so content has room ──────────── */
+@media (max-width: 600px) {
+  .drawer-head {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  }
+  .drawer-body {
+    padding: var(--spacing-md);
+  }
+  .drawer-center {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+    padding-top: calc(var(--header-height) + var(--spacing-md));
+  }
+  .drawer-center .drawer-panel {
+    box-shadow:
+      0 16px 40px -12px rgba(7, 54, 66, 0.35),
+      0 4px 12px -8px rgba(7, 54, 66, 0.25);
+  }
+}
+
 /* ── Transitions: SIDE panels (slide panel; backdrop self-fades) ──── */
 /* Root carries NO opacity change — an opacity<1 ancestor disables the
  * backdrop's backdrop-filter, which would make the blur snap. The backdrop

@@ -81,4 +81,17 @@ const showSkeleton = computed(() => {
   color: var(--text-muted);
   max-width: 540px;
 }
+
+/* ── Mobile: tighter padding, less room reserved for the dock ────── */
+@media (max-width: 600px) {
+  .chat-scroll {
+    padding: var(--spacing-lg) var(--spacing-sm) 140px;
+  }
+  .state-zero {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+  .welcome-body {
+    font-size: 0.95rem;
+  }
+}
 </style>

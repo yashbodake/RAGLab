@@ -460,6 +460,27 @@ function getFileIcon(filename) {
   margin-top: 4px;
 }
 
+/* ── Mobile: tighter page padding, smaller headings ──────────────── */
+@media (max-width: 600px) {
+  .document-manager-page {
+    padding: var(--spacing-lg) var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+  .page-header h2 {
+    font-size: 1.4rem;
+  }
+  .upload-side, .listing-side {
+    padding: var(--spacing-md);
+  }
+  .upload-side {
+    max-width: 100%;
+  }
+  /* Metric cards: 2-per-row on phones */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* Metrics Bar */
 .metrics-grid {
   display: grid;

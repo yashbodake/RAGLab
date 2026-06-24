@@ -284,4 +284,18 @@ const firstParagraphIndex = computed(() =>
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Mobile: slightly smaller body text, tighter headers ─────────── */
+@media (max-width: 600px) {
+  .synthesis-body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .block-header {
+    font-size: 1.25rem;
+  }
+  .user-text {
+    font-size: 0.95rem;
+  }
+}
 </style>
