@@ -154,7 +154,10 @@ const firstParagraphIndex = computed(() =>
           </div>
         </div>
 
-        <span v-if="isStreaming" class="typing-cursor"></span>
+        <!-- Inline typing cursor: sits at the end of the streaming text so it
+             tracks the "typing head" like ChatGPT/Claude, instead of floating
+             below the content where it's rarely visible. -->
+        <span v-if="isStreaming && content" class="typing-cursor-inline"></span>
       </div>
 
       <!-- Expandable cited documents -->
@@ -230,6 +233,18 @@ const firstParagraphIndex = computed(() =>
 }
 
 .block-paragraph { color: rgba(7, 54, 66, 0.9); }
+
+/* Inline typing cursor — sits at the end of the streaming text (inline-block),
+   tracking the typing head like ChatGPT/Claude. */
+.typing-cursor-inline {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background: var(--accent-secondary);
+  margin-left: 3px;
+  vertical-align: text-bottom;
+  animation: cursorBlink 0.9s infinite;
+}
 
 .block-list-item {
   display: flex;

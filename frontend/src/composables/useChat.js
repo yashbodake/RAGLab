@@ -53,6 +53,38 @@ export function useChat() {
 
     isStreaming.value = true;
 
+    // Typewriter reveal queue — decouples token arrival speed from reveal
+    // speed so the answer types out at a natural cadence (ChatGPT/Claude feel)
+    // instead of dumping each SSE chunk instantly.
+    let queuedChars = '';
+    let revealDone = false;
+
+    // Drain a few characters per tick at a steady cadence. Characters per tick
+    // scales up slightly when the queue grows long, so a fast backend burst
+    // doesn't make the reveal lag unreasonably behind.
+    const REVEAL_INTERVAL_MS = 16;   // ~60fps
+    const BASE_CHARS_PER_TICK = 2;
+    const revealTimer = setInterval(() => {
+      const idx = messages.value.findIndex(m => m.id === assistantMsgId);
+      if (idx === -1) return;
+      if (queuedChars.length === 0) {
+        // Queue empty — if the stream already finished, complete the reveal:
+        // stop the timer and flip isStreaming off (cursor stops blinking).
+        if (revealDone) {
+          clearInterval(revealTimer);
+          messages.value[idx].isStreaming = false;
+          isStreaming.value = false;
+        }
+        return;
+      }
+      // Reveal more chars when falling behind so we never lag far behind the
+      // backend while still looking like deliberate typing.
+      const burst = queuedChars.length > 40 ? Math.ceil(queuedChars.length / 20) : BASE_CHARS_PER_TICK;
+      const chunk = queuedChars.slice(0, burst);
+      queuedChars = queuedChars.slice(burst);
+      messages.value[idx].content += chunk;
+    }, REVEAL_INTERVAL_MS);
+
     try {
       const response = await fetch('/query', {
         method: 'POST',
@@ -118,7 +150,10 @@ export function useChat() {
             } else if (eventType === 'token') {
               const idx = messages.value.findIndex(m => m.id === assistantMsgId);
               if (idx !== -1) {
-                messages.value[idx].content += data.text;
+                // Queue tokens for smooth typewriter reveal instead of dumping
+                // each SSE chunk instantly (which reads as "appears all at once").
+                // The reveal loop below drains queuedChars at a natural cadence.
+                queuedChars += data.text;
               }
             } else if (eventType === 'metrics') {
               updateMetrics(data);
@@ -129,10 +164,9 @@ export function useChat() {
             } else if (eventType === 'error') {
               throw new Error(data.message || 'Stream processing error');
             } else if (eventType === 'done') {
-              const idx = messages.value.findIndex(m => m.id === assistantMsgId);
-              if (idx !== -1) {
-                messages.value[idx].isStreaming = false;
-              }
+              // Stream finished — let the reveal queue drain the rest, then
+              // the finally block flips isStreaming off once revealed.
+              revealDone = true;
             }
           } catch (e) {
             console.error('Error parsing SSE event payload:', e, dataStr);
@@ -141,17 +175,20 @@ export function useChat() {
       }
     } catch (err) {
       console.error('SSE Stream error:', err);
+      clearInterval(revealTimer);
       const idx = messages.value.findIndex(m => m.id === assistantMsgId);
       if (idx !== -1) {
-        messages.value[idx].content = `System Error: ${err.message || 'Failed to complete RAG query pipeline.'}`;
+        // Flush whatever was queued so the error appears after typed text.
+        messages.value[idx].content += queuedChars + `\n\nSystem Error: ${err.message || 'Failed to complete RAG query pipeline.'}`;
+        queuedChars = '';
         messages.value[idx].isStreaming = false;
+        isStreaming.value = false;
       }
     } finally {
-      isStreaming.value = false;
-      const idx = messages.value.findIndex(m => m.id === assistantMsgId);
-      if (idx !== -1) {
-        messages.value[idx].isStreaming = false;
-      }
+      // Mark the reveal eligible to complete. The revealTimer owns the final
+      // isStreaming flip so the text types out fully before the cursor stops.
+      // (Timer is cleared above on error.)
+      revealDone = true;
     }
   }
 
