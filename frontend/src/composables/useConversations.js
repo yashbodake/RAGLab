@@ -130,5 +130,6 @@ export function useConversations() {
     loadConversation,
     deleteConversation,
     clearAll,
+    persist,   // expose so useChat can save after streaming mutations
   };
 }
