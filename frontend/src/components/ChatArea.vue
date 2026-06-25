@@ -32,9 +32,11 @@ const canRegenerate = computed(() => {
     && messages.value[n - 2].role === 'user';
 });
 
-// Feature grid is collapsed by default so the welcome screen stays clean —
-// everything (headline + message + input hint) fits in one frame.
-const featuresExpanded = ref(false);
+// Feature grid starts EXPANDED on the welcome screen so the retrieval
+// techniques are immediately visible for the first query — more discoverable
+// than collapsed-by-default. It disappears with the welcome screen once the
+// first message is sent, so there's nothing to auto-collapse.
+const featuresExpanded = ref(true);
 
 // Count of currently-enabled features, for the badge.
 const activeFeatureCount = computed(() =>
