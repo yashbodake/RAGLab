@@ -88,7 +88,7 @@ const canRegenerate = computed(() => {
       </div>
     </div>
 
-    <ChatInput @send="sendQuery" />
+    <ChatInput :welcome="messages.length === 0" @send="sendQuery" />
   </main>
 </template>
 
@@ -109,18 +109,19 @@ const canRegenerate = computed(() => {
   padding: var(--spacing-2xl) var(--spacing-md) 180px;
 }
 
-/* In welcome mode (no messages yet): center the welcome content vertically
-   and pull the input dock up to sit just below it — like ChatGPT/Claude's
-   landing screen — instead of leaving the input pinned to the empty bottom. */
+/* In welcome mode (no messages yet): center the welcome content + input
+   together as a group — like ChatGPT/Claude's landing screen. The input dock
+   switches to position:relative (via the :welcome prop) so it flows here too. */
+.chat-area.welcome-mode {
+  justify-content: center;
+}
 .chat-area.welcome-mode .chat-scroll {
-  display: flex;
-  flex-direction: column;       /* so justify-content controls vertical axis */
-  justify-content: center;      /* vertically center the canvas */
-  align-items: center;          /* horizontal centering */
-  padding-bottom: 120px;
+  flex: 0 0 auto;               /* don't grow — size to content */
+  overflow: visible;
+  padding: 0 var(--spacing-md);
 }
 /* The canvas must size to its content (not stretch to fill) so the centering
-   above has effect — without this it grabs the full height and stays at top. */
+   has effect — without this it grabs the full height and stays at top. */
 .chat-area.welcome-mode .chat-canvas {
   align-self: center;
   height: auto;

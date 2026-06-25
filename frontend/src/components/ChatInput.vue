@@ -3,6 +3,12 @@ import { ref, computed, watch, nextTick } from 'vue';
 import { useChat } from '../composables/useChat';
 import { useFeatures } from '../composables/useFeatures';
 
+defineProps({
+  // When true (no messages yet), the dock flows in normal layout right under
+  // the centered welcome content instead of being pinned to the viewport bottom.
+  welcome: { type: Boolean, default: false }
+});
+
 const emit = defineEmits(['send']);
 
 const query = ref('');
@@ -62,7 +68,7 @@ watch(query, () => {
 </script>
 
 <template>
-  <div class="input-dock">
+  <div class="input-dock" :class="{ 'welcome-mode': welcome }">
     <!-- Feature pill tray — expands above the input when the + is toggled -->
     <Transition name="tray">
       <div v-if="featuresOpen" class="feature-tray">
@@ -154,6 +160,16 @@ watch(query, () => {
   background: linear-gradient(to top, var(--bg-primary) 55%, rgba(253, 246, 227, 0));
   pointer-events: none;
   z-index: 20;
+}
+
+/* Welcome mode: stop pinning to the bottom — flow in normal layout so the
+   dock sits directly under the vertically-centered welcome content. */
+.input-dock.welcome-mode {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  background: transparent;
 }
 
 /* ── Feature pill tray (expands above the input) ──────────────────── */
