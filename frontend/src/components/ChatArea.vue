@@ -11,7 +11,6 @@ const {
   isStreaming,
   suggestions,
   sendQuery,
-  stopGeneration,
   regenerate,
   exportPDF,
 } = useChat();
@@ -97,14 +96,6 @@ const featureChips = [
         </section>
 
         <MessageList :messages="messages" />
-
-        <!-- Stop generation (shown only while streaming) -->
-        <div v-if="isStreaming" class="action-row">
-          <button class="action-btn stop-btn" @click="stopGeneration">
-            <span class="material-symbols-outlined">stop_circle</span>
-            <span>STOP GENERATING</span>
-          </button>
-        </div>
 
         <!-- Action row: regenerate + export + follow-up suggestions -->
         <div v-if="messages.length > 0 && !isStreaming" class="action-row">
@@ -357,22 +348,6 @@ const featureChips = [
   border-color: var(--accent-secondary);
 }
 .action-btn .material-symbols-outlined { font-size: 16px; }
-
-/* Stop button: distinct terracotta treatment to signal it halts generation */
-.stop-btn {
-  color: var(--accent-error);
-  border-color: rgba(220, 50, 47, 0.4);
-  animation: stopPulse 1.6s ease-in-out infinite;
-}
-.stop-btn:hover {
-  background: var(--accent-error);
-  color: #fff;
-  border-color: var(--accent-error);
-}
-@keyframes stopPulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
 
 .suggestions {
   display: flex;

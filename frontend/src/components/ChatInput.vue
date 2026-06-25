@@ -6,7 +6,7 @@ const emit = defineEmits(['send']);
 
 const query = ref('');
 const textareaRef = ref(null);
-const { isStreaming, compareWithBaseline } = useChat();
+const { isStreaming, compareWithBaseline, stopGeneration } = useChat();
 
 function handleSend() {
   if (!query.value.trim() || isStreaming.value) return;
@@ -17,10 +17,16 @@ function handleSend() {
   }
 }
 
+// Enter sends when idle; while streaming, Enter stops generation (handy with
+// the morphing button) so users have a keyboard shortcut for stop too.
 function handleKeyDown(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    handleSend();
+    if (isStreaming.value) {
+      stopGeneration();
+    } else {
+      handleSend();
+    }
   }
 }
 
@@ -44,18 +50,28 @@ watch(query, () => {
         placeholder="Inquire the RAGLab..."
         rows="1"
         class="input-textarea"
-        :disabled="isStreaming"
         @keydown="handleKeyDown"
       ></textarea>
 
+      <!-- Send / Stop: the same button slot morphs between send (arrow) and
+           stop (square) based on streaming state — like ChatGPT/Claude. -->
       <button
+        v-if="!isStreaming"
         class="send-button"
-        :class="{ active: query.trim() && !isStreaming }"
-        :disabled="!query.trim() || isStreaming"
+        :class="{ active: query.trim() }"
+        :disabled="!query.trim()"
         aria-label="Send Query"
         @click="handleSend"
       >
         <span class="material-symbols-outlined">north</span>
+      </button>
+      <button
+        v-else
+        class="send-button stop-button"
+        aria-label="Stop generating"
+        @click="stopGeneration"
+      >
+        <span class="material-symbols-outlined">stop</span>
       </button>
     </div>
 
@@ -138,6 +154,19 @@ watch(query, () => {
 .send-button:disabled { opacity: 0.25; cursor: not-allowed; }
 .send-button:not(:disabled):active { transform: scale(0.88); }
 .send-button.active:hover { background: var(--accent-secondary); }
+
+/* Stop button: terracotta square in the send-button slot while streaming */
+.stop-button {
+  background: var(--accent-secondary);
+  color: #fff;
+  animation: stopBtnPulse 1.6s ease-in-out infinite;
+}
+.stop-button:hover { background: #b03e10; }
+.stop-button .material-symbols-outlined { font-size: 18px; font-variation-settings: 'FILL' 1; }
+@keyframes stopBtnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(203, 75, 22, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(203, 75, 22, 0); }
+}
 
 /* ── Mobile: full-width dock, reduced shadow/padding ────────────── */
 @media (max-width: 600px) {
