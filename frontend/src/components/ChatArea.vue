@@ -13,24 +13,9 @@ const {
   sendQuery,
   stopGeneration,
   regenerate,
-  exportMarkdown,
+  exportPDF,
 } = useChat();
 const { features, toggleFeature } = useFeatures();
-
-// Download the active conversation as a .md file.
-function downloadExport() {
-  const md = exportMarkdown();
-  if (!md) return;
-  const blob = new Blob([md], { type: 'text/markdown' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'raglab-conversation.md';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
 
 const showSkeleton = computed(() => {
   if (isStreaming.value) return false;
@@ -136,10 +121,10 @@ const featureChips = [
             <button
               v-if="messages.length > 0"
               class="action-btn"
-              @click="downloadExport"
+              @click="exportPDF"
             >
-              <span class="material-symbols-outlined">download</span>
-              <span>EXPORT .MD</span>
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+              <span>EXPORT PDF</span>
             </button>
           </div>
 

@@ -257,20 +257,64 @@ export function useChat() {
     if (abortController) abortController.abort();
   }
 
-  // Export the active conversation as a Markdown string.
-  function exportMarkdown() {
+  // Export the active conversation as a PDF (generated client-side via jsPDF).
+  async function exportPDF() {
     const conv = activeConversation.value;
-    if (!conv || conv.messages.length === 0) return null;
-    const lines = [`# ${conv.title}`, ''];
+    if (!conv || conv.messages.length === 0) return;
+
+    const { jsPDF } = await import('jspdf');
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 48;
+    const maxW = pageW - margin * 2;
+    let y = margin;
+
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.setTextColor(7, 54, 66);
+    const titleLines = doc.splitTextToSize(conv.title, maxW);
+    doc.text(titleLines, margin, y);
+    y += titleLines.length * 24 + 10;
+
+    // Subtitle line
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(136, 136, 136);
+    doc.text(`RAGLab export · ${new Date().toLocaleString()}`, margin, y);
+    y += 24;
+
     for (const m of conv.messages) {
-      if (m.role === 'user') {
-        lines.push('## ❓ ' + m.content);
-      } else {
-        lines.push('## 💡 Answer', '', m.content || '_(no content)_');
+      const label = m.role === 'user' ? 'QUESTION' : 'ANSWER';
+      const isUser = m.role === 'user';
+
+      // Ensure room for at least the label + a couple of lines; else new page.
+      if (y > pageH - margin - 60) { doc.addPage(); y = margin; }
+
+      // Role label
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(isUser ? 203 : 7, isUser ? 75 : 54, isUser ? 22 : 66);
+      doc.text(label, margin, y);
+      y += 16;
+
+      // Body — wrapped, with page breaks.
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(30, 30, 30);
+      const body = (m.content || '_(no content)_').replace(/\n{3,}/g, '\n\n');
+      const lines = doc.splitTextToSize(body, maxW);
+      const lineH = 15;
+      for (const ln of lines) {
+        if (y > pageH - margin) { doc.addPage(); y = margin; }
+        doc.text(ln, margin, y);
+        y += lineH;
       }
-      lines.push('');
+      y += 18; // gap between turns
     }
-    return lines.join('\n');
+
+    doc.save('raglab-conversation.pdf');
   }
 
   // Suggestions for the most recent answer (shown as follow-up chips).
@@ -325,7 +369,7 @@ export function useChat() {
     stopGeneration,
     regenerate,
     fetchSuggestions,
-    exportMarkdown,
+    exportPDF,
     clearConversation,
     setActiveConversation,
     syncMessages,
