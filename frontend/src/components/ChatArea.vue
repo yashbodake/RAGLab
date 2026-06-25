@@ -32,7 +32,7 @@ const canRegenerate = computed(() => {
 </script>
 
 <template>
-  <main class="chat-area">
+  <main class="chat-area" :class="{ 'welcome-mode': messages.length === 0 }">
     <div class="chat-scroll">
       <div class="chat-canvas">
         <!-- State-zero welcome (only before first query) -->
@@ -107,6 +107,19 @@ const canRegenerate = computed(() => {
   overflow-y: auto;
   overflow-x: hidden;
   padding: var(--spacing-2xl) var(--spacing-md) 180px;
+}
+
+/* In welcome mode (no messages yet): center the welcome content vertically
+   and pull the input dock up to sit just below it — like ChatGPT/Claude's
+   landing screen — instead of leaving the input pinned to the empty bottom. */
+.chat-area.welcome-mode .chat-scroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 120px;
+}
+.chat-area.welcome-mode .chat-canvas {
+  justify-content: center;
 }
 
 .chat-canvas {
