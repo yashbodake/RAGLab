@@ -11,9 +11,26 @@ const {
   isStreaming,
   suggestions,
   sendQuery,
+  stopGeneration,
   regenerate,
+  exportMarkdown,
 } = useChat();
 const { features, toggleFeature } = useFeatures();
+
+// Download the active conversation as a .md file.
+function downloadExport() {
+  const md = exportMarkdown();
+  if (!md) return;
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'raglab-conversation.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 const showSkeleton = computed(() => {
   if (isStreaming.value) return false;
@@ -96,16 +113,35 @@ const featureChips = [
 
         <MessageList :messages="messages" />
 
-        <!-- Action row: regenerate + follow-up suggestions -->
-        <div v-if="messages.length > 0 && !isStreaming" class="action-row">
-          <button
-            v-if="canRegenerate"
-            class="action-btn"
-            @click="regenerate"
-          >
-            <span class="material-symbols-outlined">refresh</span>
-            <span>REGENERATE</span>
+        <!-- Stop generation (shown only while streaming) -->
+        <div v-if="isStreaming" class="action-row">
+          <button class="action-btn stop-btn" @click="stopGeneration">
+            <span class="material-symbols-outlined">stop_circle</span>
+            <span>STOP GENERATING</span>
           </button>
+        </div>
+
+        <!-- Action row: regenerate + export + follow-up suggestions -->
+        <div v-if="messages.length > 0 && !isStreaming" class="action-row">
+          <div class="action-row-top">
+            <button
+              v-if="canRegenerate"
+              class="action-btn"
+              @click="regenerate"
+            >
+              <span class="material-symbols-outlined">refresh</span>
+              <span>REGENERATE</span>
+            </button>
+
+            <button
+              v-if="messages.length > 0"
+              class="action-btn"
+              @click="downloadExport"
+            >
+              <span class="material-symbols-outlined">download</span>
+              <span>EXPORT .MD</span>
+            </button>
+          </div>
 
           <div v-if="suggestions.length > 0" class="suggestions">
             <span class="suggestions-label label-caps">FOLLOW-UP</span>
@@ -301,7 +337,7 @@ const featureChips = [
   color: var(--accent-secondary);
 }
 
-/* ── Action row: regenerate + follow-up suggestions ──────────────── */
+/* ── Action row: regenerate + export + follow-up suggestions ─────── */
 .action-row {
   display: flex;
   flex-direction: column;
@@ -310,8 +346,13 @@ const featureChips = [
   margin-top: var(--spacing-sm);
 }
 
+.action-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
 .action-btn {
-  align-self: flex-start;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -331,6 +372,22 @@ const featureChips = [
   border-color: var(--accent-secondary);
 }
 .action-btn .material-symbols-outlined { font-size: 16px; }
+
+/* Stop button: distinct terracotta treatment to signal it halts generation */
+.stop-btn {
+  color: var(--accent-error);
+  border-color: rgba(220, 50, 47, 0.4);
+  animation: stopPulse 1.6s ease-in-out infinite;
+}
+.stop-btn:hover {
+  background: var(--accent-error);
+  color: #fff;
+  border-color: var(--accent-error);
+}
+@keyframes stopPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
 
 .suggestions {
   display: flex;

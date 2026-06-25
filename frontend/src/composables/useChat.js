@@ -8,6 +8,10 @@ import { useConversations } from './useConversations';
 const isStreaming = ref(false);
 const compareWithBaseline = ref(false);
 
+// AbortController for the in-flight /query fetch — lets the user stop
+// generation mid-stream. Reset on each new query; null when not streaming.
+let abortController = null;
+
 // Direct reactive ref of the active conversation's message array. We keep this
 // in sync with the conversation store manually (syncMessages) so the chat view
 // re-renders reliably when messages are added or content streams in — a plain
@@ -97,6 +101,9 @@ export function useChat() {
 
     isStreaming.value = true;
 
+    // Fresh AbortController for this query — stopGeneration() aborts it.
+    abortController = new AbortController();
+
     // Typewriter reveal queue — decouples token arrival speed from reveal
     // speed so the answer types out at a natural cadence (ChatGPT/Claude feel)
     // instead of dumping each SSE chunk instantly.
@@ -147,7 +154,8 @@ export function useChat() {
           features: getFeaturePayload(),
           compare_with_baseline: compareWithBaseline.value,
           history,   // multi-turn context
-        })
+        }),
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -221,23 +229,48 @@ export function useChat() {
         }
       }
     } catch (err) {
-      console.error('SSE Stream error:', err);
+      // User-initiated stop: don't show an error, just finalize what we have.
+      const isAbort = err.name === 'AbortError';
       clearInterval(revealTimer);
       const msg = findAssistant();
       if (msg) {
-        // Flush whatever was queued so the error appears after typed text.
-        msg.content += queuedChars + `\n\nSystem Error: ${err.message || 'Failed to complete RAG query pipeline.'}`;
+        // Flush whatever was revealed so far so the partial answer stays.
+        msg.content += queuedChars;
         queuedChars = '';
+        if (!isAbort) {
+          // Only show the system error for genuine failures.
+          msg.content += `\n\nSystem Error: ${err.message || 'Failed to complete RAG query pipeline.'}`;
+        }
         msg.isStreaming = false;
         isStreaming.value = false;
         persist();
       }
+      if (!isAbort) console.error('SSE Stream error:', err);
     } finally {
-      // Mark the reveal eligible to complete. The revealTimer owns the final
-      // isStreaming flip so the text types out fully before the cursor stops.
-      // (Timer is cleared above on error.)
+      abortController = null;
       revealDone = true;
     }
+  }
+
+  // Stop an in-flight generation: abort the fetch, flush queued text, finalize.
+  function stopGeneration() {
+    if (abortController) abortController.abort();
+  }
+
+  // Export the active conversation as a Markdown string.
+  function exportMarkdown() {
+    const conv = activeConversation.value;
+    if (!conv || conv.messages.length === 0) return null;
+    const lines = [`# ${conv.title}`, ''];
+    for (const m of conv.messages) {
+      if (m.role === 'user') {
+        lines.push('## ❓ ' + m.content);
+      } else {
+        lines.push('## 💡 Answer', '', m.content || '_(no content)_');
+      }
+      lines.push('');
+    }
+    return lines.join('\n');
   }
 
   // Suggestions for the most recent answer (shown as follow-up chips).
@@ -289,8 +322,10 @@ export function useChat() {
     compareWithBaseline,
     suggestions,
     sendQuery,
+    stopGeneration,
     regenerate,
     fetchSuggestions,
+    exportMarkdown,
     clearConversation,
     setActiveConversation,
     syncMessages,
