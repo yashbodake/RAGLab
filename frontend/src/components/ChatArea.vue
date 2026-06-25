@@ -109,11 +109,13 @@ const canRegenerate = computed(() => {
    switches to position:relative (via the :welcome prop) so it flows here too. */
 .chat-area.welcome-mode {
   justify-content: center;
+  align-items: center;          /* horizontally center the whole group */
 }
 .chat-area.welcome-mode .chat-scroll {
   flex: 0 0 auto;               /* don't grow — size to content */
   overflow: visible;
-  padding: 0 var(--spacing-md);
+  padding: 0;
+  width: min(var(--canvas-max-width), 92vw);
 }
 /* The canvas must size to its content (not stretch to fill) so the centering
    has effect — without this it grabs the full height and stays at top. */
@@ -121,6 +123,7 @@ const canRegenerate = computed(() => {
   align-self: center;
   height: auto;
   flex: 0 0 auto;
+  width: 100%;
 }
 
 .chat-canvas {
@@ -133,22 +136,27 @@ const canRegenerate = computed(() => {
 
 /* State-zero welcome */
 .state-zero {
-  padding: var(--spacing-lg) var(--spacing-sm);
+  text-align: center;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 .welcome-eyebrow {
   color: var(--accent-secondary);
   font-size: 11px;
-  margin-bottom: var(--spacing-md);
   display: block;
+  margin: 0;
 }
 .welcome-headline {
   font-family: var(--font-headline);
   font-weight: 700;
-  font-size: clamp(2rem, 5vw, 3rem);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
   color: var(--accent-primary);
-  margin-bottom: var(--spacing-lg);
+  margin: 0 0 var(--spacing-2xl) 0;   /* breathing room before the input */
 }
 .welcome-body {
   font-family: var(--font-body);
