@@ -1,6 +1,7 @@
 <script setup>
 import { useConversations } from '../composables/useConversations';
 import { useChat } from '../composables/useChat';
+import { useLayout } from '../composables/useLayout';
 
 const {
   conversations,
@@ -10,6 +11,7 @@ const {
   createConversation,
 } = useConversations();
 const { setActiveConversation, syncMessages } = useChat();
+const { historyOpen } = useLayout();
 
 function fmtTime(ts) {
   const d = new Date(ts);
@@ -20,13 +22,16 @@ function fmtTime(ts) {
 }
 
 function selectConv(id) {
-  // setActiveConversation loads it AND syncs the chat's messages ref.
+  // Load the conversation, sync the chat view, then close the drawer so the
+  // user immediately sees the conversation they picked.
   setActiveConversation(id);
+  historyOpen.value = false;
 }
 
 function newChat() {
   createConversation();
   syncMessages();
+  historyOpen.value = false;
 }
 </script>
 
