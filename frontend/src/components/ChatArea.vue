@@ -114,12 +114,17 @@ const canRegenerate = computed(() => {
    landing screen — instead of leaving the input pinned to the empty bottom. */
 .chat-area.welcome-mode .chat-scroll {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;       /* so justify-content controls vertical axis */
+  justify-content: center;      /* vertically center the canvas */
+  align-items: center;          /* horizontal centering */
   padding-bottom: 120px;
 }
+/* The canvas must size to its content (not stretch to fill) so the centering
+   above has effect — without this it grabs the full height and stays at top. */
 .chat-area.welcome-mode .chat-canvas {
-  justify-content: center;
+  align-self: center;
+  height: auto;
+  flex: 0 0 auto;
 }
 
 .chat-canvas {
