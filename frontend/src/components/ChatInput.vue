@@ -1,12 +1,32 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { useChat } from '../composables/useChat';
+import { useFeatures } from '../composables/useFeatures';
 
 const emit = defineEmits(['send']);
 
 const query = ref('');
 const textareaRef = ref(null);
 const { isStreaming, compareWithBaseline, stopGeneration } = useChat();
+const { features, toggleFeature } = useFeatures();
+
+// Feature tray open/closed — the + button morphs to X.
+const featuresOpen = ref(false);
+
+const activeFeatureCount = computed(() =>
+  Object.values(features).filter(Boolean).length
+);
+
+// The 7 retrieval features as creative toggle pills (icon + label, no checkboxes).
+const featurePills = [
+  { key: 'hybrid',              icon: 'merge',         label: 'Hybrid' },
+  { key: 'query_understanding', icon: 'alt_route',     label: 'Routing' },
+  { key: 'metadata_aware',      icon: 'filter_alt',    label: 'Metadata' },
+  { key: 'multi_index',         icon: 'view_module',   label: 'Multi-Index' },
+  { key: 'remote_embed',        icon: 'cloud_sync',    label: 'Remote Embed' },
+  { key: 'hnsw',                icon: 'tune',          label: 'HNSW' },
+  { key: 'stream_sources',      icon: 'bolt',          label: 'Eager Sources' },
+];
 
 function handleSend() {
   if (!query.value.trim() || isStreaming.value) return;
@@ -43,7 +63,40 @@ watch(query, () => {
 
 <template>
   <div class="input-dock">
+    <!-- Feature pill tray — expands above the input when the + is toggled -->
+    <Transition name="tray">
+      <div v-if="featuresOpen" class="feature-tray">
+        <div class="tray-inner">
+          <span class="tray-label label-caps">RETRIEVAL TECHNIQUES</span>
+          <div class="pill-row">
+            <button
+              v-for="f in featurePills"
+              :key="f.key"
+              class="feat-pill"
+              :class="{ on: features[f.key] }"
+              @click="toggleFeature(f.key)"
+              :aria-pressed="features[f.key]"
+            >
+              <span class="material-symbols-outlined pill-icon">{{ f.icon }}</span>
+              <span class="pill-label">{{ f.label }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <div class="input-frame">
+      <!-- Left: + / X toggle (morphs). Shows a count badge when features active. -->
+      <button
+        class="feature-toggle"
+        :class="{ open: featuresOpen }"
+        @click="featuresOpen = !featuresOpen"
+        :aria-label="featuresOpen ? 'Hide features' : 'Show features'"
+      >
+        <span class="material-symbols-outlined">{{ featuresOpen ? 'close' : 'add' }}</span>
+        <span v-if="activeFeatureCount > 0 && !featuresOpen" class="feat-badge">{{ activeFeatureCount }}</span>
+      </button>
+
       <textarea
         ref="textareaRef"
         v-model="query"
@@ -101,6 +154,110 @@ watch(query, () => {
   background: linear-gradient(to top, var(--bg-primary) 55%, rgba(253, 246, 227, 0));
   pointer-events: none;
   z-index: 20;
+}
+
+/* ── Feature pill tray (expands above the input) ──────────────────── */
+.feature-tray {
+  max-width: var(--canvas-max-width);
+  margin: 0 auto var(--spacing-sm);
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-shadow: 4px 4px 0 0 rgba(7, 54, 66, 1);
+  padding: var(--spacing-sm) var(--spacing-md);
+  pointer-events: auto;
+}
+.tray-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+.tray-label {
+  color: var(--text-dim);
+  font-size: 9px;
+}
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+.feat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid rgba(7, 54, 66, 0.2);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.feat-pill:hover {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+/* Active state: terracotta filled pill */
+.feat-pill.on {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  color: #fff;
+}
+.pill-icon { font-size: 14px; }
+
+/* Tray expand/collapse animation */
+.tray-enter-active, .tray-leave-active {
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transform-origin: bottom center;
+}
+.tray-enter-from, .tray-leave-to {
+  opacity: 0;
+  transform: translateY(8px) scaleY(0.9);
+}
+
+/* ── +/X feature toggle button (left of input) ───────────────────── */
+.feature-toggle {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #000;
+  border: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.feature-toggle:hover { color: var(--accent-secondary); }
+.feature-toggle .material-symbols-outlined { font-size: 22px; transition: transform var(--transition-fast); }
+.feature-toggle.open {
+  background: var(--accent-secondary);
+  color: #fff;
+}
+.feature-toggle.open .material-symbols-outlined { transform: rotate(90deg); }
+
+/* Count badge on the + button when features are active */
+.feat-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-secondary);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
 }
 
 .input-frame {
