@@ -277,15 +277,20 @@ watch(query, () => {
 }
 
 .input-frame {
-  max-width: var(--canvas-max-width);
+  /* Fixed standard size: 768px wide x 56px tall is the conventional chat
+     input dimension (ChatGPT/Claude use ~768px). Locked so it doesn't
+     shrink/grow between welcome mode and chat mode. */
+  width: 768px;
+  max-width: 100%;
+  min-height: 56px;
   margin: 0 auto;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: var(--spacing-md);
   background: #ffffff;
   border: 1px solid #000000;
   box-shadow: 8px 8px 0 0 rgba(7, 54, 66, 1);
-  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-lg);
+  padding: 0 var(--spacing-sm) 0 var(--spacing-lg);
   pointer-events: auto;
   transition: box-shadow var(--transition-fast);
 }
@@ -303,7 +308,7 @@ watch(query, () => {
   font-size: 0.95rem;
   line-height: 1.5;
   color: #000000;
-  padding: 10px 0;
+  padding: 16px 0;          /* fixed padding keeps the bar a consistent height */
   max-height: 200px;
   overflow-y: auto;
 }
@@ -347,9 +352,9 @@ watch(query, () => {
     padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
   }
   .input-frame {
-    /* Smaller hard shadow so it doesn't overflow the viewport edge */
+    /* Smaller hard shadow so it doesn't overflow the viewport edge. Keep the
+       fixed 56px height and locked width even on mobile. */
     box-shadow: 4px 4px 0 0 rgba(7, 54, 66, 1);
-    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
     gap: var(--spacing-sm);
   }
   .input-frame:focus-within {
@@ -357,7 +362,7 @@ watch(query, () => {
   }
   .input-textarea {
     font-size: 16px; /* 16px prevents iOS zoom-on-focus */
-    padding: 8px 0;
+    padding: 16px 0; /* keep consistent bar height */
   }
   .send-button {
     width: 36px;
