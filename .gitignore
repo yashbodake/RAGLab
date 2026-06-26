@@ -19,3 +19,6 @@ static/
 # OS / editor junk
 *.lnk
 .DS_Store
+
+# Stray text/document artifacts
+*Text Document*
