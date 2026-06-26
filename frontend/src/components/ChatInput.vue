@@ -92,14 +92,16 @@ watch(query, () => {
     </Transition>
 
     <div class="input-frame">
-      <!-- Left: + / X toggle (morphs). Shows a count badge when features active. -->
+      <!-- Left: + toggle. A single "+" icon that morphs into an "×" by rotating
+           135° (a plus rotated 135deg IS an X) — one continuous transform, no
+           icon swap. Circular fill wipes in when open. -->
       <button
         class="feature-toggle"
         :class="{ open: featuresOpen }"
         @click="featuresOpen = !featuresOpen"
         :aria-label="featuresOpen ? 'Hide features' : 'Show features'"
       >
-        <span class="material-symbols-outlined">{{ featuresOpen ? 'close' : 'add' }}</span>
+        <span class="material-symbols-outlined plus-icon">add</span>
         <span v-if="activeFeatureCount > 0 && !featuresOpen" class="feat-badge">{{ activeFeatureCount }}</span>
       </button>
 
@@ -243,7 +245,10 @@ watch(query, () => {
   transform: translateY(8px) scaleY(0.9);
 }
 
-/* ── +/X feature toggle button (left of input) ───────────────────── */
+/* ── +/× feature toggle button (left of input) ───────────────────── */
+/* A single "+" icon morphs into "×" by rotating 135° (a plus rotated 135°
+   literally becomes an X) — one continuous, satisfying transform with a
+   circular fill that wipes in and a scale pop. No icon swap. */
 .feature-toggle {
   position: relative;
   flex-shrink: 0;
@@ -257,15 +262,35 @@ watch(query, () => {
   border: none;
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  overflow: hidden;             /* clips the circular fill wipe */
+  transition: color var(--transition-normal);
 }
-.feature-toggle:hover { color: var(--accent-secondary); }
-.feature-toggle .material-symbols-outlined { font-size: 22px; transition: transform var(--transition-fast); }
-.feature-toggle.open {
+/* Circular fill that scales up from 0 when open — a "ripple" wipe-in */
+.feature-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: var(--accent-secondary);
-  color: #fff;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 0;
 }
-.feature-toggle.open .material-symbols-outlined { transform: rotate(90deg); }
+.feature-toggle:hover::before { transform: scale(0.15); }
+.feature-toggle.open::before { transform: scale(2.2); }
+
+.feature-toggle:hover { color: var(--accent-secondary); }
+.feature-toggle.open { color: #fff; }
+
+/* The + icon: rotates 135° into an X, with a spring overshoot + scale pop */
+.plus-icon {
+  font-size: 22px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.feature-toggle:hover .plus-icon { transform: rotate(45deg) scale(0.92); }
+.feature-toggle.open .plus-icon { transform: rotate(135deg) scale(0.92); }
 
 /* Count badge on the + button when features are active */
 .feat-badge {

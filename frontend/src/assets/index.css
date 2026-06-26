@@ -132,9 +132,6 @@
 [data-theme="dark"] .synthesis-icon,
 [data-theme="dark"] .synthesis-label,
 [data-theme="dark"] .block-header,
-[data-theme="dark"] .welcome-headline {
-  color: #6B8E7A;
-}
 [data-theme="dark"] .drawer-panel {
   background: #0D1111;
 }
