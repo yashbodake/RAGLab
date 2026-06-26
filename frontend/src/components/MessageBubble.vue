@@ -195,7 +195,7 @@ const firstParagraphIndex = computed(() =>
     <template v-else>
       <div class="synthesis-head">
         <span class="material-symbols-outlined synthesis-icon" :class="{ 'fade-pulse': isStreaming }">auto_awesome</span>
-        <span class="synthesis-label label-caps">{{ isStreaming && !content ? 'RAGLAB_SYNTHESIS_THINKING' : 'RAGLAB_SYNTHESIS' }}</span>
+        <span class="synthesis-label label-caps">{{ isStreaming && !content ? 'RAGLAB_IS_THINKING' : 'RAGLAB' }}</span>
       </div>
 
       <div class="synthesis-body">

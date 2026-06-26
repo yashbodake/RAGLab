@@ -39,6 +39,10 @@ const canRegenerate = computed(() => {
         <section class="state-zero" v-if="messages.length === 0">
           <span class="welcome-eyebrow label-caps">Retrieval-Augmented Generation · Manuscript</span>
           <h1 class="welcome-headline">RAGLab_</h1>
+          <a class="built-by" href="https://github.com/yashbodake/RAGLab" target="_blank" rel="noopener">
+            <span class="material-symbols-outlined">code</span>
+            <span>Built by Yash Bodake · open source</span>
+          </a>
         </section>
 
         <MessageList :messages="messages" />
@@ -155,9 +159,28 @@ const canRegenerate = computed(() => {
   font-size: clamp(2.5rem, 7vw, 4rem);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--accent-primary);
+  color: var(--text-primary);   /* same color as the answer/body text */
   margin: 0 0 var(--spacing-2xl) 0;   /* breathing room before the input */
 }
+
+/* "Built by Yash Bodake" credit link under the welcome headline */
+.built-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+.built-by:hover {
+  color: var(--accent-secondary);
+  border-bottom-color: var(--accent-secondary);
+}
+.built-by .material-symbols-outlined { font-size: 15px; }
 .welcome-body {
   font-family: var(--font-body);
   font-size: 1.05rem;

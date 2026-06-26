@@ -322,7 +322,7 @@ watch(query, () => {
   max-height: 200px;
   overflow-y: auto;
 }
-.input-textarea::placeholder { color: rgba(0, 0, 0, 0.3); }
+.input-textarea::placeholder { color: var(--text-dim); }
 .input-textarea:disabled { opacity: 0.5; }
 
 .send-button {
