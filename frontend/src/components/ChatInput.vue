@@ -137,15 +137,18 @@ watch(query, () => {
     </div>
 
     <div class="input-meta">
-      <label class="compare-toggle" :class="{ disabled: isStreaming }">
-        <input
-          type="checkbox"
-          v-model="compareWithBaseline"
-          :disabled="isStreaming"
-          class="compare-checkbox"
-        />
-        <span class="compare-text">COMPARE_WITH_BASELINE</span>
-      </label>
+      <!-- Compare-with-baseline as a pill toggle (matches the feature pills,
+           no checkbox). Fills terracotta when active. -->
+      <button
+        class="compare-pill"
+        :class="{ on: compareWithBaseline, disabled: isStreaming }"
+        :disabled="isStreaming"
+        :aria-pressed="compareWithBaseline"
+        @click="compareWithBaseline = !compareWithBaseline"
+      >
+        <span class="material-symbols-outlined compare-icon">{{ compareWithBaseline ? 'check' : 'compare_arrows' }}</span>
+        <span>Compare with baseline</span>
+      </button>
       <span class="hint">↵ SEND · ⇧↵ NEWLINE</span>
     </div>
   </div>
@@ -440,48 +443,38 @@ watch(query, () => {
   pointer-events: auto;
 }
 
-.compare-toggle {
-  display: flex;
+/* ── Compare-with-baseline pill toggle ───────────────────────────── */
+/* Matches the feature-pill aesthetic: outline when off, terracotta fill
+   when on. No checkbox. */
+.compare-pill {
+  display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  cursor: pointer;
-  user-select: none;
-}
-.compare-toggle.disabled { opacity: 0.5; cursor: not-allowed; }
-
-.compare-checkbox {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--accent-primary);
+  gap: 5px;
+  padding: 5px 10px;
   background: transparent;
+  border: 1px solid rgba(7, 54, 66, 0.2);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  position: relative;
-  flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
-.compare-checkbox:checked {
+.compare-pill:hover:not(.disabled) {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+.compare-pill.on {
   background: var(--accent-secondary);
   border-color: var(--accent-secondary);
-}
-.compare-checkbox:checked::after {
-  content: '✓';
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: #fff;
-  font-size: 11px;
-  font-weight: 700;
 }
-
-.compare-text {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
+.compare-pill.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
+.compare-icon { font-size: 14px; }
 
 .hint {
   font-family: var(--font-mono);
