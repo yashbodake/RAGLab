@@ -346,14 +346,25 @@ watch(query, () => {
   50% { box-shadow: 0 0 0 6px rgba(203, 75, 22, 0); }
 }
 
+/* ── Tablet: scale the bar down from the fixed 768px ─────────────── */
+@media (max-width: 900px) and (min-width: 601px) {
+  .input-frame {
+    width: calc(100vw - 2 * var(--spacing-xl));
+    max-width: 768px;
+  }
+}
+
 /* ── Mobile: full-width dock, reduced shadow/padding ────────────── */
 @media (max-width: 600px) {
   .input-dock {
     padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
   }
   .input-frame {
-    /* Smaller hard shadow so it doesn't overflow the viewport edge. Keep the
-       fixed 56px height and locked width even on mobile. */
+    /* Fit the mobile viewport: full width minus side margins, and shrink the
+       hard shadow so it doesn't overflow the screen edge. */
+    width: calc(100vw - 2 * var(--spacing-md));
+    max-width: calc(100vw - 2 * var(--spacing-md));
+    min-height: 56px;
     box-shadow: 4px 4px 0 0 rgba(7, 54, 66, 1);
     gap: var(--spacing-sm);
   }
@@ -367,6 +378,12 @@ watch(query, () => {
   .send-button {
     width: 36px;
     height: 36px;
+    flex-shrink: 0;
+  }
+  .feature-toggle {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
   }
   /* Stack the meta row: compare toggle above the hint, both centered */
   .input-meta {
