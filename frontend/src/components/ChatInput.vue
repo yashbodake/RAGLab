@@ -160,6 +160,10 @@ watch(query, () => {
   background: linear-gradient(to top, var(--bg-primary) 55%, rgba(253, 246, 227, 0));
   pointer-events: none;
   z-index: 20;
+  /* Mask the position-flip between welcome (relative/centered) and chat
+     (absolute/bottom) with a quick transform+opacity transition. `position`
+     itself can't animate, so this gives the eye a smooth handoff. */
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
 }
 
 /* Welcome mode: stop pinning to the bottom — flow in normal layout so the
@@ -172,10 +176,16 @@ watch(query, () => {
   background: transparent;
 }
 
-/* ── Feature pill tray (expands above the input) ──────────────────── */
+/* ── Feature pill tray (overlays above the input bar) ────────────── */
+/* Absolutely positioned so opening/closing it (+/X) never pushes the bar or
+   the dock layout — it floats above the input frame instead. */
 .feature-tray {
-  max-width: var(--canvas-max-width);
-  margin: 0 auto var(--spacing-sm);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + var(--spacing-sm));
+  width: 768px;
+  max-width: calc(100vw - 2 * var(--spacing-md));
   background: #ffffff;
   border: 1px solid #000000;
   box-shadow: 4px 4px 0 0 rgba(7, 54, 66, 1);
